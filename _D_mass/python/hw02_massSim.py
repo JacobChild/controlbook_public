@@ -16,9 +16,8 @@ from dataPlotter import dataPlotter
 
 #instantiate reference input classes
 reference = signalGenerator(1.0, 0.5, 0.2) #amplitude, frequency, y_offset
-thetaRef = signalGenerator(2.0*np.pi, 0.1) #amplitude, frequency
-phiRef = signalGenerator(0.5, 0.1) #amplitude, frequency
-tauRef = signalGenerator(5, 0.5) #amplitude, frequency
+massPosRef = signalGenerator(1.0, .5, .2) #amplitude, frequency, y_offset
+forceInputRef = None #this will be where the force input/controller is definded
 
 #instantiate the simulation plots and animation
 dataPlot = dataPlotter()
@@ -27,13 +26,12 @@ t = P.t_start #time starts at t_start
 while t < P.t_end:
     # set variables
     r = reference.sin(t)
-    theta = thetaRef.sin(t)
-    phi = phiRef.sin(t)
-    tau = tauRef.sawtooth(t)
+    massPos = massPosRef.sin(t)
+    forceInput = forceInputRef
     # update animation
-    state = np.array([[theta], [phi], [0.0], [0.0]])
+    state = np.array([[massPos], [None], [None], [None]])
     animation.update(state)
-    dataPlot.update(t, r, state, tau)
+    dataPlot.update(t, r, state, forceInput)
     # advance time by t_plot
     t = t + P.t_plot
     plt.pause(0.001)

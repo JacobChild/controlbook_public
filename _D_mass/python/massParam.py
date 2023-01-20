@@ -2,9 +2,9 @@
 import numpy as np
 
 # Physical parameters of the arm known to the controller
-m =  10.0 # mass kg
-k =  2.0 # spring constant Kg/s^2
-b = 1.0  # damping coefficient Kg/s
+m =  5.0 # mass kg
+k =  3.0 # spring constant Kg/s^2
+b = 0.5  # damping coefficient Kg/s
 
 # parameters for animation
 length = 5.0
