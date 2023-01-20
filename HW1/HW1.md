@@ -7,13 +7,16 @@ a parameter file like armParam.py that contains the physical parameters
 an animation file like armAnimiation.py that draws a graphic
  dataPlotter.py that plots the state and input data
 Study these files and try to understand how they work.
+
+- [x] Done, I feel like I understand how they work.
+
 2.  In a similar way, carefully dissect hw02_pendulumSim.py and hw02_satelliteSim.py.  Run these launch files and understand what you are observing.
 
  
 
 The hw02_*.py files simply plot the systems but do not implement the dynamics.  The dynamics will be implemented in the next homework set.
 
- 
+- [x] Done, I feel like I understand how the code works, not the EOMs though... 
 
 3.  In the _D_mass directory, create the simulation launch file hw02_massSim.py, and use it to animate the mass moving back and forth according to a sin wave with amplitude of 1 (m), frequency of 0.5 Hz, and y_offset of 0.2 (m).
 

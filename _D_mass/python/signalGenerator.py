@@ -1,7 +1,7 @@
 import numpy as np
 
 class signalGenerator:
-    def __init__(self, amplitude=1.0, frequency=0.001, y_offset=0):
+    def __init__(self, amplitude=1.0, frequency=0.001, y_offset=0.0):
         self.amplitude = amplitude  # signal amplitude
         self.frequency = frequency  # signal frequency
         self.y_offset = y_offset  # signal y-offset

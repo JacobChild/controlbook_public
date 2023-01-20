@@ -1,11 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import armParam as P
-from signalGenerator import signalGenerator
+import armParam as P #has the arm Parameters
+#Each of the above imports the given package/file as the given command
+from signalGenerator import signalGenerator #imports the signalGenerator class
 from armAnimation import armAnimation
 from dataPlotter import dataPlotter
+#each of the above imports a specific class/object from each of those files
 
 # instantiate reference input classes
+#instantiates (initiates) the class at each of the given values and saves them as different refs
 reference = signalGenerator(amplitude=0.5, frequency=0.1)
 thetaRef = signalGenerator(amplitude=2.0*np.pi, frequency=0.1)
 tauRef = signalGenerator(amplitude=5, frequency=.5)
