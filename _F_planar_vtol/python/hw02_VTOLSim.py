@@ -9,3 +9,41 @@ of 2 (m), frequency of 0.1 Hz, and
 """
 
 #! Look at the animation & plotter files
+#IMport all of the needed classes and files
+import matplotlib.pyplot as plt
+import numpy as np
+import VTOLParam as P
+from signalGenerator import signalGenerator
+from VTOLAnimation import VTOLAnimation
+from dataPlotter import dataPlotter
+
+#Instantiate reference input classes
+reference = signalGenerator(4, .1, 5) #amplitude, frequency, y_offset
+VTOLZPosRef = signalGenerator(4, .1, 5) #amplitude, frequency, y_offset
+AltitudeRef = signalGenerator(2, .1) #amplitude, frequency
+forceInputRef = None #this will be where the force input/controller is definded
+torqueInputRef = None #this will be where the torque input/controller is definded
+
+#Instantiate the simulation plots and animation
+dataPlot = dataPlotter()
+animation = VTOLAnimation()
+t = P.t_start #time starts at t_start
+while t < P.t_end:
+    # set variables
+    r = reference.sin(t)
+    VTOLZPos = VTOLZPosRef.sin(t)
+    Altitude = AltitudeRef.square(t)
+    forceInput = forceInputRef #this will be where the force input/controller is definded
+    torqueInput = torqueInputRef #this will be where the torque input/controller is definded
+    # update animation
+    state = np.array([[VTOLZPos], [Altitude], [0.0], [0.0]])
+    animation.update(state)
+    dataPlot.update(t, state, VTOLZPosRef, AltitudeRef, forceInput, torqueInput)
+    # advance time by t_plot
+    t = t + P.t_plot
+    plt.pause(0.001)
+   
+# Keeps the program from closing until the user presses a button.
+print('Press key to close')
+plt.waitforbuttonpress()
+plt.close()
