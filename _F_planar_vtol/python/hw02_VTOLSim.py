@@ -43,7 +43,7 @@ while t < P.t_end:
     torqueInput = torqueInputRef #this will be where the torque input/controller is definded
     # update animation
     state = np.array([[VTOLZPos], [Altitude], [theta], [0.0]])
-    animation.update(state)
+    animation.update(state, AltitudeCurRef)
     dataPlot.update(t, state, VTOLZCurRef, AltitudeCurRef, forceInput, torqueInput)
     # advance time by t_plot
     t = t + P.t_plot

@@ -15,7 +15,7 @@ from massAnimation import massAnimation
 from dataPlotter import dataPlotter
 
 #instantiate reference input classes
-reference = signalGenerator(1.0, 0.5, 0.2) #amplitude, frequency, y_offset
+reference = signalGenerator(0.0, 0.5, 0.2) #amplitude, frequency, y_offset
 massPosRef = signalGenerator(1.0, .5, .2) #amplitude, frequency, y_offset
 forceInputRef = None #this will be where the force input/controller is definded
 
