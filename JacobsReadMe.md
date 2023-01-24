@@ -6,5 +6,7 @@ My github steps
 Pre- fork and add remote/upstream
 1. git fetch upstream (fetches what is upstream)
 2. git merge upstream/master (merges upstream into my master branch)
+   
+   #! I haven't got the below to work, steps 1 and 2 do though
 3. Both of the above steps can be done with one step-
    1. git pull upstream/master

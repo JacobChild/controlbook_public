@@ -25,7 +25,7 @@ class armDynamics:
         # This is the external method that takes the input u at time
         # t and returns the output y at time t.
         # saturate the input torque
-        u = saturate(u, self.torque_limit)
+        u = saturate(u, self.torque_limit) #calls the saturate function
         self.rk4_step(u)  # propagate the state by one time sample
         y = self.h()  # return the corresponding output
         return y
@@ -34,7 +34,7 @@ class armDynamics:
         # Return xdot = f(x,u), the system state update equations
         # re-label states for readability
         theta = state[0][0]
-        thetadot = state[1][0]
+        thetadot = state[1][0] # the "\" forward slash below allows us to go to the next line
         thetaddot = (3.0 / self.m / self.ell**2) * \
                     (tau - self.b*thetadot \
                      - self.m * self.g * self.ell / 2.0*np.cos(theta))
@@ -59,5 +59,5 @@ class armDynamics:
     
 def saturate(u, limit):
     if abs(u) > limit:
-        u = limit * np.sign(u)
+        u = limit * np.sign(u) #if the input torque is larger than the limit, then the input torque is set to the limit
     return u

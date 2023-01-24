@@ -6,7 +6,7 @@ from dataPlotter import dataPlotter
 from armDynamics import armDynamics
 
 # instantiate arm, controller, and reference classes
-arm = armDynamics()
+arm = armDynamics() #Instantiated the armDynamics class as arm in this file
 #second_arm = armDynamics()
 reference = signalGenerator(amplitude=0.01, frequency=0.02)
 torque = signalGenerator(amplitude=0.2, frequency=0.05)
@@ -25,8 +25,8 @@ while t < P.t_end:  # main simulation loop
     # updates control and dynamics at faster simulation rate
     while t < t_next_plot:  
         # Get referenced inputs from signal generators
-        r = reference.square(t)
-        u = torque.square(t)
+        r = reference.square(t) #the signal we want to match
+        u = torque.square(t) #the control input
         #u2 = torque2.sin(t)
         y = arm.update(u)  # Propagate the dynamics
         #y2 = second_arm.update(u2)
