@@ -1,7 +1,7 @@
 # mass-spring-damper Parameter File
 import numpy as np
 
-# Physical parameters of the arm known to the controller
+# Physical parameters of mass spring damper known to the controller
 m =  5.0 # mass kg
 k =  3.0 # spring constant Kg/s^2
 b = 0.5  # damping coefficient Kg/s
@@ -25,5 +25,4 @@ t_plot = .1 # the plotting and animation is updated at this rate
 # beta =   # dirty derivative gain
 
 # saturation limits
-# F_max =   # Max force, N
-
+F_max =  100.0 # Max force, N
