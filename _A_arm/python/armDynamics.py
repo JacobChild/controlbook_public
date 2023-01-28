@@ -1,7 +1,7 @@
 import numpy as np 
 import armParam as P
 
-
+# set up the arm dynamics class
 class armDynamics:
     def __init__(self, alpha=0.0):
         # Initial state conditions

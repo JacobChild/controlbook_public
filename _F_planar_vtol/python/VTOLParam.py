@@ -4,6 +4,7 @@ import numpy as np
 # Physical parameters of the  VTOL known to the controller
 mc = 1.0 # kg
 mr =  .25 # kg
+ml =  .25 # kg
 Jc = .0042  # kg m^2
 d =  0.3 # m
 mu =  0.1 # kg/s

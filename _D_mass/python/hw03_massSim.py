@@ -24,25 +24,26 @@ from massDynamics import massDynamics
 #instantiate mass, controller, and reference classes
 mass = massDynamics() #Instantiated the massDynamics class as mass in this file
 #instantiate reference input classes
-reference = signalGenerator(0.0, 0.5, 0.2) #amplitude, frequency, y_offset
-massPosRef = signalGenerator(1.0, .5, .2) #amplitude, frequency, y_offset
-forceInputRef = signalGenerator(10.0, 1.0, 0.0) #amplitude, frequency, y_offset
+forceInputRef = signalGenerator(10.0, 1.0) #amplitude, frequency, y_offset
 
 #instantiate the simulation plots and animation
 dataPlot = dataPlotter()
 animation = massAnimation()
 t = P.t_start #time starts at t_start
-while t < P.t_end: #! compare this while loop to the one in hw03_armSim.py
-    #set variables
-    r = reference.sin(t)
-    massPos = massPosRef.sin(t)
-    forceInput = forceInputRef.sin(t)
-    #update animation
-    state = np.array([[massPos], [None], [None], [None]])
-    animation.update(state)
-    dataPlot.update(t, r, state, forceInput)
-    #advance time by t_plot
-    t = t + P.t_plot
+while t < P.t_end: #main simulation loop
+    #Propagate dynamics in between plot samples
+    t_next_plot = t + P.t_plot
+    #updates control and dynamics at faster simulation rate
+    while t < t_next_plot:
+        #Get referenced inputs from signal generators
+        forceInput = forceInputRef.sin(t)
+        #update the dynamics
+        y = mass.update(forceInput)
+        t = t + P.Ts #advance time by Ts
+    #update animation and data plots
+    animation.update(mass.state)
+    dataPlot.update(t, None, mass.state, forceInput)
+    #the pause causes the figure to be displayed during the simulation
     plt.pause(0.001)
     
 # Keeps the program from closing until the user presses a button.
