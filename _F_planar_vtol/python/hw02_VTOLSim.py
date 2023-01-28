@@ -1,4 +1,4 @@
-""" hw02_massSim.py
+""" hw02_VTOLSim.py
 Jacob Child
 Date Updated: Jan 20, 2023
 HW Description: In the _F_VTOL directory, create the simulation launch file 
