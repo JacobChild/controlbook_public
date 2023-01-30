@@ -14,7 +14,7 @@ class VTOLDynamics:
         self.Jc = P.Jc * (1. + alpha * (2. * np.random.rand() - 1.)) # moment of inertia of the cabin
         self.d = P.d * (1. + alpha * (2. * np.random.rand() - 1.)) # distance from the rotor to the cabin
         # Environment Parameters
-        #self.mu = P.mu #* (1. + alpha * (2. * np.random.rand() - 1.)) # dynamic viscosity of air
+        self.mu = P.mu #* (1. + alpha * (2. * np.random.rand() - 1.)) # dynamic viscosity of air
         self.g = P.g # gravity
         self.F_wind = P.F_wind * (1. + alpha * (2. * np.random.rand() - 1.)) # wind disturbance force
         # Sample rate at which the dynamics are propagated
@@ -26,6 +26,7 @@ class VTOLDynamics:
         # t and returns the output y at time t.
         # saturate the input force
         u = self.saturate(u, self.fmax) #calls the saturate function
+        self.rk4_step(u) #propagate the state by one time step
         y = self.h()  # return the corresponding output
         return y
     
@@ -40,9 +41,9 @@ class VTOLDynamics:
         zdot = state[3][0]
         hdot = state[4][0]
         thetadot = state[5][0]
-        zddot = ( -1.0*(fr + fl)*np.sin(theta) ) / (self.mc + 2*self.mr) #? for the future - self.mu*zdot
-        hddot = ( -1.0*(self.mc + 2*self.mr)*self.g + (fr + fl)*np.cos(theta)) / (self.mc + 2*self.mr)
-        thetaddot = ( self.d * (fr - fl) ) / (self.Jc + 2*self.mr*self.d**2)
+        zddot = ( -1.0*(fr + fl)*np.sin(theta) - self.mu*zdot) / (self.mc + 2.0*self.mr) #? for the future - self.mu*zdot
+        hddot = ( -1.0*(self.mc + 2.0*self.mr)*self.g + (fr + fl)*np.cos(theta)) / (self.mc + 2.0*self.mr)
+        thetaddot = ( self.d * (fr - fl) ) / (self.Jc + 2.0*self.mr*self.d**2)
         xdot = np.array([[zdot], [hdot], [thetadot], [zddot], [hddot], [thetaddot]])
         return xdot
     

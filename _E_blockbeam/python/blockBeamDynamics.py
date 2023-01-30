@@ -44,7 +44,7 @@ class blockBeamDynamics:
         #could also use input u if needed
         z = self.state[0]
         theta = self.state[2]
-        y = np.array([z, theta])
+        y = np.array([[z], [theta]])
         return y
     
     def rk4_step(self, u):

@@ -28,6 +28,8 @@ VTOL = VTOLDynamics() #Instantiated the VTOLDynamics class as VTOL in this file
 forceRightInputRef = signalGenerator(10.0, 1.0, 0.0) #amplitude, frequency, y_offset
 forceLeftInputRef = signalGenerator(10.0, 1.0, 0.0) #amplitude, frequency, y_offset
 VTOLPosRefSig = signalGenerator(1.0, 0.1, 0.0) #amplitude, frequency, y_offset
+torqueInputRefSig = signalGenerator(0.0, 0.1) #this will be where the torque input/controller is definded
+
 
 #instantiate the simulation plots and animation
 dataPlot = dataPlotter()
@@ -41,14 +43,16 @@ while t < P.t_end: #main simulation loop
         #Get referenced inputs from signal generators
         forceRightInput = forceRightInputRef.sin(t)
         forceLeftInput = forceLeftInputRef.sin(t)
-        VTOLPosRef = VTOLPosRefSig.square(t)
+        zPosRef = VTOLPosRefSig.square(t)
+        hPosRef = VTOLPosRefSig.square(t)
+        torqueInputRef = torqueInputRefSig.square(t)
         #update the dynamics
         forceInput = np.array([[forceRightInput], [forceLeftInput]])
         y = VTOL.update(forceInput)
         t = t + P.Ts #advance time by Ts
     #update animation and data plots
     animation.update(VTOL.state)
-    dataPlot.update(t, VTOLPosRef, VTOL.state, forceInput) 
+    dataPlot.update(t, VTOL.state, zPosRef, hPosRef, forceInput[0][0], torqueInputRef ) 
     # the pause causes the figure to be displayed during the simulation
     plt.pause(0.001)
     
