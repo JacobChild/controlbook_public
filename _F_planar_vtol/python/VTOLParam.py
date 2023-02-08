@@ -39,4 +39,6 @@ fmax = 100.0  # Max Force, N
 # equilibrium force
 # Fe =
 
+# mixing matrix
+mixing = np.linalg.inv(np.array([[1.0, 1.0], [d, -d]]))
 
