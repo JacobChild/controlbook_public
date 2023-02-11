@@ -30,6 +30,7 @@ class dataPlotter:
         '''
             Add to the time and data histories, and update the plots.
         '''
+        #print(states)
         # update the time history of all plot variables
         self.time_history.append(t)  # time
         self.zref_history.append(reference)  # reference base position

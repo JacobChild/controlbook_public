@@ -15,12 +15,12 @@ F_wind = 0.0 # wind disturbance force is zero in initial homeworks
 length = 10.0
 
 # Initial Conditions
-z0 = 10.0  # initial lateral position
-h0 = 10.0  # initial altitude
-theta0 = 20.0 # initial roll angle #? is this in degs or rads
-zdot0 = 1.0  # initial lateral velocity
-hdot0 = 1.0  # initial climb rate
-thetadot0 = 10.0  # initial roll rate #? is this in degs or rads
+z0 = 0.0  # initial lateral position
+h0 = 0.0  # initial altitude
+theta0 = 0.0 # initial roll angle #? is this in degs or rads
+zdot0 = 0.0  # initial lateral velocity
+hdot0 = 0.0  # initial climb rate
+thetadot0 = 0.0  # initial roll rate #? is this in degs or rads
 target0 = 0.0 # initial target position #? just picked one?
 
 # Simulation Parameters
@@ -30,7 +30,7 @@ Ts = .01  # sample time for simulation
 t_plot = .1 # the plotting and animation is updated at this rate
 
 # saturation limits
-fmax = 100.0  # Max Force, N
+fmax = 20.0  # Max Force, N #! why doesn't it fall if clipped at 10N?
 
 # dirty derivative parameters
 # sigma =   # cutoff freq for dirty derivative
