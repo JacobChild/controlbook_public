@@ -5,7 +5,7 @@ hummingbird = hummingbirdDynamics()
 
 flag = True
 
-# ------------------------------------
+#------------------------------------
 initial_state = np.array([[0.], [0.], [0.], [0.], [0.], [0.]])
 input = np.array([[0.], [0.]])
 hummingbird.state = initial_state.copy()

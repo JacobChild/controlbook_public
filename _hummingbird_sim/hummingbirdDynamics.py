@@ -74,7 +74,7 @@ class hummingbirdDynamics:
               ( ( P.J1y - P.J1z)*(np.cos(phi)**2 - np.sin(phi)**2) - P.J1x) 
               * np.cos(theta)*phidot*thetadot + (P.J1z - P.J1y)*np.sin(phi)
               *np.cos(phi)*np.sin(theta)*thetadot**2 + 2.0*(P.J1y - P.J1z)*np.sin(phi)
-              *np.cos(phi)*thetadot*psidot + 2.0 
+              *np.cos(phi)*phidot*psidot + 2.0 
               *(-P.m1*P.ell1**2 - P.m2*P.ell2**2 - P.J2z + P.J1x +P.J2x + P.J1y*np.sin(phi)**2 
                 + P.J1z*np.sin(phi)**2)*np.sin(theta)*np.cos(theta)*thetadot*psidot )
         C = np.array([[c1],
