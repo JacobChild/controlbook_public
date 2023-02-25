@@ -1,10 +1,10 @@
 # mass-spring-damper Parameter File
 import numpy as np
-
+import random
 # Physical parameters of mass spring damper known to the controller
-m =  5.0 # mass kg
-k =  3.0 # spring constant Kg/s^2
-b = 0.5  # damping coefficient Kg/s
+m = 5.0 # mass kg
+k = 3.0 # spring constant Kg/s^2
+b = .5 #damping coefficient Kg/s
 
 # parameters for animation
 length = 5.0
