@@ -1,25 +1,25 @@
 #Import all of the needed classes and files
 import matplotlib.pyplot as plt
 import numpy as np
-import blockbeamParam as P
+import VTOLParam as P
 from signalGenerator import signalGenerator
-from blockbeamAnimation import blockbeamAnimation
+from VTOLAnimation import VTOLAnimation
 from dataPlotter import dataPlotter
-from blockBeamDynamics import blockBeamDynamics
-from ctrlPIDhw10 import ctrlPD
+from VTOLDynamics import VTOLDynamics
+from ctrlStateFeedback import ctrlStateFeedback
 
 #instantiate mass, controller, and reference classes
-blockbeam = blockBeamDynamics(alpha = 0.2) #Instantiated the blockbeamDynamics class as blockbeam in this file
-controller = ctrlPD()
+VTOL = VTOLDynamics(alpha = 0.2) #Instantiated the blockbeamDynamics class as blockbeam in this file
+controller = ctrlStateFeedback()
 #instantiate reference input classes
-#ForceInputRef = signalGenerator(0.5, 1.0, 11.5) #amplitude, frequency, y_offset
-blockPosRefSig = signalGenerator(.125, 0.02, 0.250) #amplitude, frequency, y_offset
+zPosRefSig = signalGenerator(3.0, 0.08, 2.5) #amplitude, frequency, y_offset
+hInputRefSig = signalGenerator(5.0, 0.01, 5.0) #this will be where the torque input/controller is definded
 
 #instantiate the simulation plots and animation
 dataPlot = dataPlotter()
-animation = blockbeamAnimation()
+animation = VTOLAnimation()
 t = P.t_start #time starts at t_start
-y = blockbeam.h()
+y = VTOL.h()
 
 while t < P.t_end: #main simulation loop
     #Propagate dynamics in between plot samples
@@ -27,17 +27,19 @@ while t < P.t_end: #main simulation loop
     #updates control and dynamics at faster simulation rate
     while t < t_next_plot:
         #Get referenced inputs from signal generators
-        #forceInput = forceInputRef.sin(t)
-        blockPosRef = blockPosRefSig.square(t)
+        zPosRef = zPosRefSig.square(t)
+        hPosRef = hInputRefSig.square(t)
+        VTOLPosRef = np.array([[zPosRef], [hPosRef]])
         n = 0.0
-        xCurrent = y #in the form [z][theta], this y is from the past
-        u = controller.update(blockPosRef, xCurrent)
+        x = y #this is the y from the past
+        u = controller.update(VTOLPosRef, VTOL.state)
+        #print(u)
         #update the dynamics
-        y = blockbeam.update(u)
+        y = VTOL.update(u)
         t = t + P.Ts #advance time by Ts
     #update animation and data plots
-    animation.update(blockbeam.state)
-    dataPlot.update(t, blockPosRef, blockbeam.state, u) #
+    animation.update(VTOL.state)
+    dataPlot.update(t, VTOL.state, zPosRef,hPosRef,u[2][0], u[3][0]) #
     #the pause causes the figure to be displayed during the simulation
     #plt.pause(0.001)
     

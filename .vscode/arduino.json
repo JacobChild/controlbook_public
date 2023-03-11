@@ -1,0 +1,6 @@
+{
+    "configuration": "cpu=atmega328",
+    "board": "arduino:avr:nano",
+    "programmer": "avrisp",
+    "sketch": "_hummingbird_lab\\labH4_equilibrium\\labH4_equilibrium.ino"
+}

@@ -13,7 +13,7 @@ class Dynamics():
         self.z0 = 0.0
         self.phidot0 = 0.0
         self.zdot0 = 0.0
-        self.state = np.array([self.phi0], [self.z0], [self.phidot0], [self.zdot0])
+        self.state = np.array([[self.phi0], [self.z0], [self.phidot0], [self.zdot0]])
         
     def update(self, u):
          # This is the external method that takes the input u at time

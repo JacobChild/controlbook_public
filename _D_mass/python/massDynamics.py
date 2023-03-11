@@ -6,11 +6,11 @@ class massDynamics:
         # Initial state conditions
         self.state = np.array([[P.z0], [P.zdot0]]) #initial position and velocity
         #Mass of the block, kg
-        self.m = P.m * (1.+alpha*(2.*np.random.rand()-1.))
+        self.m = P.m * (1+2*alpha*np.random.rand()-alpha)
         #Spring constant, N/m
-        self.k = P.k* (1.+alpha*(2.*np.random.rand()-1.))
+        self.k = P.k * (1+2*alpha*np.random.rand()-alpha)
         #Damping coefficient, Ns/m
-        self.b = P.b* (1.+alpha*(2.*np.random.rand()-1.))
+        self.b = P.b * (1+2*alpha*np.random.rand()-alpha)
         #Sample rate at which the dynamics are propagated
         self.Ts = P.Ts
         self.force_limit = P.F_max

@@ -1,6 +1,5 @@
 # mass-spring-damper Parameter File
 import numpy as np
-import random
 # Physical parameters of mass spring damper known to the controller
 m = 5.0 # mass kg
 k = 3.0 # spring constant Kg/s^2

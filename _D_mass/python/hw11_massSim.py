@@ -6,13 +6,13 @@ from signalGenerator import signalGenerator
 from massAnimation import massAnimation
 from dataPlotter import dataPlotter
 from massDynamics import massDynamics
-from ctrlPIDhw10 import ctrlPID
+from ctrlStateFeedback import ctrlStateFeedback
 
 #instantiate mass, controller, and reference classes
 mass = massDynamics(alpha = 0.2) #Instantiated the massDynamics class as mass in this file
-controller = ctrlPID()
+controller = ctrlStateFeedback() #Instantiated the ctrlStateFeedback class as controller in this file
 # instantiate reference input classes
-ZInputRef = signalGenerator(0.5, .04) #amplitude, frequency, y_offset
+ZInputRef = signalGenerator(0.5, .08) #amplitude, frequency, y_offset
 
 #instantiate the simulation plots and animation
 dataPlot = dataPlotter()
@@ -30,8 +30,8 @@ while t < P.t_end: #main simulation loop
         n = 0.0 #noise input
         #update the dynamics
         zCurrent = y
-        u  = controller.update(zInput,zCurrent+n)
-        y = mass.update(u+d) #propagate system
+        u  = controller.update(zInput, mass.state)
+        y = mass.update(u + d) #propagate system
         t = t + P.Ts #advance time by Ts
     #update animation and data plots
     animation.update(mass.state)

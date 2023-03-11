@@ -29,7 +29,7 @@ class ctrlPD:
         #PD gains
         self.kph = (wn_h**2 - a0_h) / b0_h
         self.kdh = (2.0*zeta_h*wn_h - a1_h) / b0_h
-        self.kih = 1.28
+        self.kih = 0.05
         print('kph = ', self.kph)
         print('kdh = ', self.kdh)
         print('kih = ', self.kih)
@@ -59,7 +59,7 @@ class ctrlPD:
         #PD gains
         self.kpz = (wn_z**2 - a0_z) / b0_z
         self.kdz = (2.0*zeta_z*wn_z - a1_z) / b0_z
-        self.kiz = 0.05 # integral gain
+        self.kiz = -.005 # integral gain
         print('kpz = ', self.kpz)
         print('kdz = ', self.kdz)
         print('kiz = ', self.kiz)
@@ -93,7 +93,7 @@ class ctrlPD:
         #Longitudinal control (Altitude)
         herr = h_r - h
         #integrator and anti-windup
-        if np.abs(self.zdot) < 0.01:
+        if np.abs(self.hdot) < 0.01:
             self.integrator_h = self.integrator_h + (P.Ts/2.0)*(herr + self.error_h)
         else:
             self.integrator_h = 0.0 
@@ -112,7 +112,7 @@ class ctrlPD:
         zerr = z_r - z
         #integrator and anti-windup
         if np.abs(self.zdot) < 0.01:
-            self.integrator_z = self.integrator_z + (P.Ts/2.0)*(zerr - self.error_z)
+            self.integrator_z = self.integrator_z + (P.Ts/2.0)*(zerr + self.error_z)
         else:
             self.integrator_z = 0.0
         
@@ -133,7 +133,7 @@ class ctrlPD:
         fl0 = np.clip(fl, -P.fmax/2.0, P.fmax/2.0)
         #fl0 = saturate(fl, P.fmax)
         fr = tautilde/P.d + fl  
-        fr0 = self.saturate(fr, P.fmax)
+        fr0 = self.saturate(fr, P.fmax/2.0)
         #fr0 = saturate(fr, P.fmax)
         fout = np.array([[fr0], [fl0], [F0], [tautilde]])
         
