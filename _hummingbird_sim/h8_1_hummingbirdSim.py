@@ -4,11 +4,11 @@ import hummingbirdParam as P
 from signalGenerator import SignalGenerator
 from hummingbirdAnimation import HummingbirdAnimation
 from dataPlotter import DataPlotter
-from hummingbirdDynamics import HummingbirdDynamics
+from hummingbirdDynamics import hummingbirdDynamics
 from ctrlLonPID import ctrlLonPID
 
 # instantiate pendulum, controller, and reference classes
-hummingbird = HummingbirdDynamics(alpha=0.1)
+hummingbird = hummingbirdDynamics(alpha=0.1)
 controller = ctrlLonPID()
 theta_ref = SignalGenerator(amplitude=0.5, frequency=0.1)
 
@@ -30,10 +30,10 @@ while t < P.t_end:  # main simulation loop
 
     # update animation and data plots at rate t_plot
     animation.update(t, hummingbird.state)
-    dataPlot.update(t, hummingbird.state, y_ref, u)
+    dataPlot.update(t, hummingbird.state, y_ref, u[1][0], 0.0)
 
     # the pause causes figure to be displayed during simulation
-    plt.pause(0.0001)
+    #plt.pause(0.0001)
 
 # Keeps the program from closing until the user presses a button.
 print('Press key to close')
