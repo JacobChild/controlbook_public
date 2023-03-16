@@ -48,7 +48,10 @@ class ctrlStateFeedback:
         z = x[0][0]
         #print(self.K, "self.K")
         #print(x, "x")
-        Ftilde = -self.K @ x + self.kr * z_r
+        # create the current state
+        x_tilde = x - np.array([[P.z0], [0.0], [0.0], [0.0]])
+        zr_tilde = z_r - P.z0
+        Ftilde = -self.K @ x_tilde + self.kr * zr_tilde
         Fe = P.m1*P.g*z/P.length + P.m2*P.g/2.0
         Fin = Ftilde + Fe
         Fout = self.saturate(Fin, P.Fmax)

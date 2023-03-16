@@ -14,7 +14,7 @@ controller = ctrlStateFeedback()
 #instantiate reference input classes
 #ForceInputRef = signalGenerator(0.5, 1.0, 11.5) #amplitude, frequency, y_offset
 #blockPosRefSig = signalGenerator(.125, 0.02, 0.250) #amplitude, frequency, y_offset
-blockPosRefSig = signalGenerator(.125, 0.08, 0.250)
+blockPosRefSig = signalGenerator(amplitude=.125, frequency=0.04, y_offset = 0.25)
 
 #instantiate the simulation plots and animation
 dataPlot = dataPlotter()
