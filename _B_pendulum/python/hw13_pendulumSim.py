@@ -12,7 +12,7 @@ from dataPlotterObserver import dataPlotterObserver
 pendulum = pendulumDynamics(alpha=0.0)
 controller = ctrlObserver()
 reference = signalGenerator(amplitude=0.5, frequency=0.05)
-disturbance = signalGenerator(amplitude=0.5)
+disturbance = signalGenerator(amplitude=1.0)
 noise_z = signalGenerator(amplitude=0.01)
 noise_th = signalGenerator(amplitude=0.01)
 
