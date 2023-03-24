@@ -25,7 +25,7 @@ class VTOLDynamics:
         # This is the external method that takes the input u at time
         # t and returns the output y at time t.
         # saturate the input force
-        u = self.saturate(u, self.fmax) #calls the saturate function
+        #u = self.saturate(u, self.fmax) #calls the saturate function
         self.rk4_step(u) #propagate the state by one time step
         y = self.h()  # return the corresponding output
         return y
@@ -67,8 +67,6 @@ class VTOLDynamics:
     
     def saturate(self, u, limit):
         # Saturate the input u
-        if abs(u[0][0]) > limit:
-            u[0][0] = limit * np.sign(u)
-        if abs(u[1][0]) > limit:
-            u[1][0] = limit * np.sign(u)
+        if abs(u) > limit:
+            u = limit*np.sign(u)
         return u

@@ -6,17 +6,18 @@ from signalGenerator import signalGenerator
 from blockbeamAnimation import blockbeamAnimation
 from dataPlotter import dataPlotter
 from blockBeamDynamics import blockBeamDynamics
-from ctrlStateFeedbackwIntegrator import ctrlStateFeedback
+from ctrlStateFeedbackwIntegrator import ctrlStateFeedbackwIntegrator
 
 #instantiate mass, controller, and reference classes
-blockbeam = blockBeamDynamics(alpha = 0.2) #Instantiated the blockbeamDynamics class as blockbeam in this file
-controller = ctrlStateFeedback()
-blockPosRefSig = signalGenerator(amplitude=.125, frequency=0.04, y_offset = 0.25)
-disturbance = signalGenerator(amplitude=0.25)
+blockbeam = blockBeamDynamics(alpha = 0.0) #Instantiated the blockbeamDynamics class as blockbeam in this file
+controller = ctrlStateFeedbackwIntegrator()
+blockPosRefSig = signalGenerator(amplitude=.125, frequency=0.05, y_offset = 0.25)
+disturbance = signalGenerator(amplitude=0.25, frequency = 0.0)
 
 #instantiate the simulation plots and animation
 dataPlot = dataPlotter()
 animation = blockbeamAnimation()
+
 t = P.t_start #time starts at t_start
 y = blockbeam.h()
 
@@ -30,7 +31,7 @@ while t < P.t_end: #main simulation loop
         blockPosRef = blockPosRefSig.square(t)
         d = disturbance.step(t) #Get disturbance input
         n = 0.0
-        xCurrent = y #in the form [z][theta], this y is from the past
+        #xCurrent = blockbeam.state #in the form [z][theta], this y is from the past
         u = controller.update(blockPosRef, blockbeam.state)
         #update the dynamics
         y = blockbeam.update(u+d)
