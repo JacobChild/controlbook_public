@@ -76,6 +76,7 @@ class ctrlLatPID:
         
         # pitch control
         force_unsat = self.kp_pitch * error_theta + self.ki_pitch * self.integrator_theta - self.kd_pitch * self.theta_dot + force_fl
+        #force_unsat = force_fl
         force = saturate(force_unsat, -P.force_max, P.force_max)
         
         # yaw control

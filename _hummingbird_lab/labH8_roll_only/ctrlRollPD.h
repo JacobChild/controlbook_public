@@ -11,9 +11,9 @@
 #include <math.h>
 
 struct {
-  float kp_phi = 
-  float kd_phi = 
-  float km = 
+  float kp_phi = .015;
+  float kd_phi = .0019;
+  float km = .276;
 } gains;
 
 #include "tuning_utilities.h"
@@ -48,7 +48,7 @@ struct Reference {
   float theta = 0.0;
   float psi = 0.0;
   float phi = 0.0;  
-};
+} ;
 
 // Lateral controller for hummingbird
 class CtrlRollPD {
@@ -86,20 +86,25 @@ class CtrlRollPD {
       phi_dot_d1 = (phi-phi_d1)/Ts;
       float phi_dot = 3*phi_dot_d1 - 3*phi_dot_d2 + phi_dot_d3;
 
-      // compute feedback linearized force      
-      float force_fl = 
+      // compute feedback linearized force
+      //(P.m1*P.ell1 + P.m2*P.ell2)*P.g*np.cos(theta) / P.ellT      
+      //float force_fl = (P.m1 * P.ell1 + P.m2 * P.ell2) * P.g * cos(theta) / P.ellT;
                          
       // compute error
-      float error_phi = 
+      float error_phi = phi_ref - phi;
 
       // roll control
-      float torque = 
-                                            
-      float force = 
+      //T_phi = self.kp_phi * error_phi - self.kd_phi * self.phi_dot
+      float torque = gains.kp_phi * error_phi - gains.kd_phi * phi_dot;
+
+      //force_unsat = self.kp_pitch * error_theta + self.ki_pitch * self.integrator_theta - self.kd_pitch * self.theta_dot + force_fl                                      
+      float force = P.fe;
       
       // convert force and torque to pwm and send to motors
-      float left_pwm = (force+torque/P.d)/(2.0*gains.km);
-      float right_pwm = (force-torque/P.d)/(2.0*gains.km);
+      float left_pwm = (force+torque/P.d)/(2.0*gains.km) - .03;
+      float right_pwm = (force-torque/P.d)/(2.0*gains.km) + .03;
+      left_pwm = saturate(left_pwm, 0.0, 0.7);
+      right_pwm = saturate(right_pwm, 0.0, 0.7);
       rotors.update(left_pwm, right_pwm); 
 
       // update all delayed variables

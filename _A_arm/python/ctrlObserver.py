@@ -25,6 +25,7 @@ class ctrlObserver:
         # form augmented system
         A1 = np.vstack((np.hstack((self.A, np.zeros((2,1)))), 
                         np.hstack((-self.C, np.zeros((1,1)))) ))
+        print("A1 = ", A1)
         B1 = np.vstack( (self.B, 0.0) )
         # gain calculation
         wn = 2.2 / tr  # natural frequency

@@ -10,8 +10,8 @@ from ctrlLatPID import ctrlLatPID
 # instantiate pendulum, controller, and reference classes
 hummingbird = hummingbirdDynamics(alpha=0.0)
 controller = ctrlLatPID()
-theta_ref = SignalGenerator(amplitude=0.5, frequency=0.2)
-psi_ref = SignalGenerator(amplitude=0.5, frequency=0.2)
+theta_ref = SignalGenerator(amplitude=0.5, frequency=0.05)
+psi_ref = SignalGenerator(amplitude=0.5, frequency=0.05)
 
 # instantiate the simulation plots and animation
 dataPlot = DataPlotter()

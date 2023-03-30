@@ -6,15 +6,16 @@ from signalGenerator import signalGenerator
 from massAnimation import massAnimation
 from dataPlotter import dataPlotter
 from massDynamics import massDynamics
-from ctrlObserver import ctrlObserver
+from ctrlDisturbanceObserver import ctrlDisturbanceObserver
 from dataPlotterObserver import dataPlotterObserver
 
 #instantiate mass, controller, and reference classes
-mass = massDynamics(alpha = 0.0) #Instantiated the massDynamics class as mass in this file
-controller = ctrlObserver() #Instantiated 
+mass = massDynamics(alpha = 0.2) #Instantiated the massDynamics class as mass in this file
+controller = ctrlDisturbanceObserver() #Instantiated 
 # instantiate reference input classes
 ZInputRef = signalGenerator(0.5, .04) #amplitude, frequency, y_offset
-disturbance = signalGenerator(amplitude=2.5)
+disturbance = signalGenerator(amplitude=0.25)
+noise = signalGenerator(amplitude=0.001)
 
 #instantiate the simulation plots and animation
 dataPlot = dataPlotter()
@@ -30,9 +31,10 @@ while t < P.t_end: #main simulation loop
         #Get referenced inputs from signal generators
         zInput = ZInputRef.square(t)
         d = disturbance.step(t) #Get disturbance input
-        n = 0.0 #noise.random(t) #noise input 
+        n = noise.random(t) #noise input 
+        
         #update controller and dynamics
-        u, xhat  = controller.update(zInput, y + n) 
+        u, xhat, dhat  = controller.update(zInput, y + n) 
         y = mass.update(u + d) #propagate system
         t = t + P.Ts #advance time by Ts
     #update animation and data plots

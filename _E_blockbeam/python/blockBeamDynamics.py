@@ -42,9 +42,13 @@ class blockBeamDynamics:
     def h(self):
         #return the output equations
         #could also use input u if needed
-        z = self.state[0]
-        theta = self.state[2]
+        #z = self.state[0]
+        #theta = self.state[2]
+        #! I changed the z and theta definitions to below, is it right?
+        z = self.state[0][0]
+        theta = self.state[1][0]
         y = np.array([[z], [theta]])
+        #print("z = ", z)
         return y
     
     def rk4_step(self, u):

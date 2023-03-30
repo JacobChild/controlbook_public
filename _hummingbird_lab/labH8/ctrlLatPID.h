@@ -5,12 +5,12 @@
 #include <math.h>
 
 struct {
-  float kp_phi = 
-  float kd_phi = 
-  float kp_psi = 
-  float kd_psi = 
-  float ki_psi = 
-  float km = 
+  float kp_phi = .0165
+  float kd_phi = .004
+  float kp_psi = .0819
+  float kd_psi = .156
+  float ki_psi = 0.0
+  float km = .276
 } gains;
 
 #include "tuning_utilities.h"
@@ -88,14 +88,22 @@ class CtrlLatPID {
       float phi_dot = 3*phi_dot_d1 - 3*phi_dot_d2 + phi_dot_d3;      
       float psi = sensors.yaw;
       float psi_dot_d1 = (psi - psi_d1) / Ts;
-      float psi_dot = 3*psi_dot_d1 - 3*psi_dot_d2 + psi_dot_d3;      
+      float psi_dot = 3*psi_dot_d1 - 3*psi_dot_d2 + psi_dot_d3;  
 
-      float torque =     
-      float force = 
+      //compute errors
+      float error_psi = psi_ref - psi
+      float phi_ref = gains.kp_psi * error_psi - gains.kd_psi * gains.psi_dot
+      float error_phi = phi_ref - phi   
+      //T_phi = self.kp_phi * error_phi - self.kd_phi * self.phi_dot
+      float torque =gains.kp_phi * error_phi - kd_phi * phi_dot
+      //(P.m1*P.ell1 + P.m2*P.ell2)*P.g*np.cos(theta) / P.ellT
+      float force = P.fe
       
       // convert force and torque to pwm and send to motors
       float left_pwm = (force+torque/P.d)/(2.0*gains.km);
       float right_pwm = (force-torque/P.d)/(2.0*gains.km);
+      left_pwm = saturate(left_pwm, 0.0, 0.7);
+      right_pwm = saturate(right_pwm, 0.0, 0.7);
       rotors.update(left_pwm, right_pwm); 
 
       // update all delayed variables
