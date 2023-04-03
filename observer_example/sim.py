@@ -23,13 +23,13 @@ while t < P.t_end:
     t_next_plot = t + P.t_plot
     while t < t_next_plot: 
         r = reference.square(t)
-        #d = disturbance.step(t)
-        d = 0.25  
+        #d = disturbance.sin(t) 
+        d = 0.25 
         n = noise.random(t)  
         u, xhat, dhat = controller.update(r, y + n)  
         y = plant.update(u + d)  
         t = t + P.Ts  
-    dataPlot.update(t, r, plant.state, u)
+    dataPlot.update(t, r, y, u)
     dataPlotObserver.update(t, plant.state, xhat, d, dhat)
     #plt.pause(0.0001)  
 print('Press key to close')
