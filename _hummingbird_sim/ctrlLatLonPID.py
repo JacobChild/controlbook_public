@@ -2,13 +2,14 @@ import numpy as np
 import hummingbirdParam as P
 
 
-class ctrlLatPID:
+class ctrlLatLonPID:
     def __init__(self):
         # tuning parameters
-        tr_pitch = 1.4 # rise time for pitch
-        zeta_pitch = .7 # damping ratio for pitch
-        self.ki_pitch = 0.0 # integrator gain
-        tr_phi = .3 
+        tr_pitch = 0.650 # rise time for pitch
+        zeta_pitch = .707 # damping ratio for pitch
+        self.ki_pitch = 2. # integrator gain
+        self.ki_yaw = 0.0001
+        tr_phi = .3
         zeta_phi = .7
         tr_psi = tr_phi * 10.0 # rise time for yaw (outer loop) needs to be faster than inner
         zeta_psi = .7
@@ -51,7 +52,9 @@ class ctrlLatPID:
         self.theta_dot = 0.
         self.psi_dot = 0.
         self.integrator_theta = 0.
+        self.integrator_psi = 0.
         self.error_theta_d1 = 0.  # pitch error delayed by 1
+        self.error_psi_d1 = 0.  # roll error delayed by 1
 
     def update(self, r, y):
         #print('r: ', r)
@@ -72,16 +75,26 @@ class ctrlLatPID:
         self.psi_dot   = (2.0*self.sigma - self.Ts) / (2.0*self.sigma + self.Ts) * self.psi_dot   + 2.0 / (2.0*self.sigma + self.Ts) * (psi - self.psi_d1)
         self.phi_dot   = (2.0*self.sigma - self.Ts) / (2.0*self.sigma + self.Ts) * self.phi_dot   + 2.0 / (2.0*self.sigma + self.Ts) * (phi - self.phi_d1)
         # update integrators
-        self.integrator_theta = self.integrator_theta + (self.Ts / 2.0) * (error_theta + self.error_theta_d1)
-        
+        #integrator anti windup
+        #print("thetadot: ", self.theta_dot)
+        if np.abs(self.theta_dot) < 0.01:
+            #print("integrator on")
+            self.integrator_theta = self.integrator_theta + (self.Ts / 2.0) * (error_theta + self.error_theta_d1)
+            
         # pitch control
         force_unsat = self.kp_pitch * error_theta + self.ki_pitch * self.integrator_theta - self.kd_pitch * self.theta_dot + force_fl
         #force_unsat = force_fl
         force = saturate(force_unsat, -P.force_max, P.force_max)
         
         # yaw control
-        phi_ref = self.kp_psi * error_psi - self.kd_psi * self.psi_dot
+        #integrator and anti windup
+        if np.abs(self.psi_dot) < 0.01:
+            #print("yaw integrator on")
+            self.integrator_psi = self.integrator_psi + (self.Ts / 2.0) * (error_psi + self.error_psi_d1)
+            
+        phi_ref = self.kp_psi * error_psi + self.ki_yaw * self.integrator_psi - self.kd_psi * self.psi_dot
         error_phi = phi_ref - phi
+            
         T_phi = self.kp_phi * error_phi - self.kd_phi * self.phi_dot
         torque = T_phi 
         
@@ -96,7 +109,7 @@ class ctrlLatPID:
         self.error_theta_d1 = error_theta
 
         # return pwm plus reference signals
-        return pwm, np.array([[phi_ref], [theta_ref], [psi_ref]])
+        return pwm, np.array([[phi_ref], [theta_ref], [psi_ref]]), np.array([[force], [torque]])
 
 
 def saturate(u, low_limit, up_limit):
