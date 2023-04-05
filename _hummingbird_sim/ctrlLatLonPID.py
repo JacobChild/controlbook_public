@@ -7,7 +7,7 @@ class ctrlLatLonPID:
         # tuning parameters
         tr_pitch = 0.650 # rise time for pitch
         zeta_pitch = .707 # damping ratio for pitch
-        self.ki_pitch = 2. # integrator gain
+        self.ki_pitch = 1.1 # integrator gain
         self.ki_yaw = 0.0001
         tr_phi = .3
         zeta_phi = .7
