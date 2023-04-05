@@ -132,7 +132,16 @@ class CtrlLonPID {
       Serial.print(theta_ref*180/PI);
       Serial.print(",");
       Serial.print("Theta:");
-      Serial.println(theta*180/PI);
+      Serial.print(theta*180/PI);
+      
+      Serial.print(",");
+      Serial.print("Psi:");
+      Serial.print(sensors.yaw*180/PI);
+      Serial.print(",");      
+      
+      Serial.print("Phi:");
+      Serial.print(sensors.roll*180/PI);
+      Serial.println();
 //      Serial.print(",");
 //      Serial.print("Theta_dot:");
 //      Serial.print(theta_dot*180/PI);

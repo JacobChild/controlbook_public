@@ -156,7 +156,7 @@ int tuneGains() {
     case 14: // button pushed
       if (abs(joy)>=0.1) state=1;
       break;    }
-  
+    Serial.println();
 }
 
 #endif 

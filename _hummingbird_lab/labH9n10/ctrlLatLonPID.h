@@ -5,15 +5,15 @@
 #include <math.h>
 
 struct {
-  float kp_theta = .0762 ;
-  float kd_theta = .0735;
-  float ki_theta = 0.0;
-  float kp_phi = .0165;
-  float kd_phi = .004;
-  float kp_psi = .0819;
-  float kd_psi = .156;
-  float ki_psi = 0.0;
-  float km = .274; //0.338; //on my other file
+  float kp_theta = 0.25 ;
+  float kd_theta = 0.1;
+  float ki_theta = 0.05;
+  float kp_phi = .006;
+  float kd_phi = .0015;
+  float kp_psi = 0.35;
+  float kd_psi = .25;
+  float ki_psi = 0.12;
+  float km = .35; //0.338; //on my other file
 } gains;
 
 #include "tuning_utilities.h"
@@ -136,8 +136,8 @@ class CtrlLatLonPID {
       float torque =gains.kp_phi * error_phi - gains.kd_phi * phi_dot;
 
       // convert force and torque to pwm and send to motors
-      float left_pwm = (force_unsat+torque/P.d)/(2.0*gains.km);
-      float right_pwm = (force_unsat-torque/P.d)/(2.0*gains.km);
+      float left_pwm = (force_unsat+torque/P.d)/(2.0*gains.km) - 0.03;
+      float right_pwm = (force_unsat-torque/P.d)/(2.0*gains.km) + 0.03;
       left_pwm = saturate(left_pwm, 0.0, 0.7);
       right_pwm = saturate(right_pwm, 0.0, 0.7);
       rotors.update(left_pwm, right_pwm); 
@@ -156,22 +156,24 @@ class CtrlLatLonPID {
       theta_dot_d2 = theta_dot_d1;
       error_theta_d1 = error_theta;
       // print commanded values
-      Serial.print("Psi_ref here:");
+      Serial.print("Yr");
       Serial.print(psi_ref*180/PI);
-      Serial.print(",");
-      Serial.print("Psi:");
+      
+      Serial.print("Y");
       Serial.print(psi*180/PI);
-      Serial.print(",");      
-      Serial.print("Phi_ref:");
-      Serial.println(phi_ref*180/PI);
-      Serial.print(",");
-      Serial.print("Phi:");
-      Serial.print(phi*180/PI); 
-      Serial.print("Theta_ref:");
+            
+      //Serial.print("Rr");
+      //Serial.print(phi_ref*180/PI);
+      
+      //Serial.print("R");
+      //Serial.print(phi*180/PI);
+
+      Serial.print("Tr");
       Serial.print(theta_ref*180/PI);
-      Serial.print(",");
-      Serial.print("Theta:");
-      Serial.println(theta*180/PI);     
+      
+      Serial.print("T");
+      Serial.print(theta*180/PI);
+      //Serial.println();     
     }
 
     float saturate(float value, float min_value, float max_value) {

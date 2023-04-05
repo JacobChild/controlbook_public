@@ -46,6 +46,7 @@ void loop()
   sensors.update();  // update sensors
   //float psi_ref = signal_generator.square_signal(timing.current);
   float psi_ref = signal_generator.square_signal(timing.current);
+  //float theta_ref = 0.0;
   float theta_ref = signal_generator.square_signal(timing.current);
   controller.update(psi_ref, theta_ref, sensors, rotors, timing.Ts);  // update controller
 
