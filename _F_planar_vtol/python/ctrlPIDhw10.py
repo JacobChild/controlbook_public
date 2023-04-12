@@ -30,6 +30,9 @@ class ctrlPD:
         self.kph = (wn_h**2 - a0_h) / b0_h
         self.kdh = (2.0*zeta_h*wn_h - a1_h) / b0_h
         self.kih = 0.05
+        self.kph = 4.218 #temporary to grade
+        self.kdh = 4.779 #temporary to grade
+        self.kih - 1.0 #temporary to grade 
         print('kph = ', self.kph)
         print('kdh = ', self.kdh)
         print('kih = ', self.kih)
@@ -43,6 +46,8 @@ class ctrlPD:
         b0_th = 1.0 / (P.Jc + 2.0*P.mr*P.d**2)
         self.kpth = (wn_th**2 - a0_th) / b0_th
         self.kdth = (2.0*zeta_th*wn_th - a1_th) / b0_th
+        self.kpth = 7.099 #temporary to grade
+        self.kdth = 1.064 #temporary to grade
         print('kpth = ', self.kpth)
         print('kdth = ', self.kdth)
         
@@ -60,6 +65,10 @@ class ctrlPD:
         self.kpz = (wn_z**2 - a0_z) / b0_z
         self.kdz = (2.0*zeta_z*wn_z - a1_z) / b0_z
         self.kiz = -.005 # integral gain
+        self.kpz = -.147 #temporary to grade
+        self.kiz = 0.0 #temporary to grade
+        self. kdz = -.213 #temporary to grade
+
         print('kpz = ', self.kpz)
         print('kdz = ', self.kdz)
         print('kiz = ', self.kiz)

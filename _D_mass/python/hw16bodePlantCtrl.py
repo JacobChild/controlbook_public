@@ -8,13 +8,15 @@ import numpy as np
 P10 = ctrlPID()
 
 # flag to define if using dB or absolute scale for M(omega)
-dB_flag = False # True
+dB_flag = P15.dB_flag # True
 
 # Assign plant from previous homework solution
 Plant = P15.Plant
 
 # compute transfer function of controller
-C_pid = tf([1.0/P.m *P10.kd, 1.0/P.m *P10.kp, 1.0/P.m * P10.ki], [1.0, P.b/P.m, P.k/P.m, 0.0])
+#! why is this wrong? C_pid = tf([1.0/P.m *P10.kd, 1.0/P.m *P10.kp, 1.0/P.m * P10.ki], [1.0, P.b/P.m, P.k/P.m, 0.0])
+C_pid = tf([(P10.kd + P10.kp*P10.sigma), (P10.kp + P10.ki*P10.sigma), P10.ki], [P10.sigma, 1.0, 0.0])
+#? it has something to do with the dirty derivative and sigmaS + 1 ?
 
 #D16 part a
 print("Tracking Error for unit ramp: ", (P.k)/(P10.ki))
@@ -34,17 +36,14 @@ if __name__ == '__main__':
 magP, phaseP, omegaP = bode(Plant, plot=False,
                              omega = [0.1, 100.0], dB=dB_flag)
 #for the controller
-magC, phaseC, omegaC = bode(C_pid, plot=False,
+magCP, phaseCP, omegaCP = bode(C_pid*Plant, plot=False,
                             omega = [0.1, 100.0], dB=dB_flag)
-#convert to dB
-magP = 20*np.log10(magP)
-gammaDinPlant = 10**(-magP/20.0)
-magC = 20*np.log10(magC)
-gammaDinCtrl = 10**(-magC/20.0)
-
-#difference
-difference = magC - magP
-#print("difference = ", difference)
-gammaDin = 10**(-difference[0]/20.0)
-print("gammaDin = ", gammaDin)
-print("gammaN = ", 10**(magC[1]/20.0)) #? why not -magC[1]?
+#if and elif statements to find gammaDin and gammaN if db_flag is true or false
+if dB_flag == True:
+    magP = 20*np.log10(magP)
+    magCP = 20*np.log10(magCP)
+    print("gammaDin = ", 10**((magP[0]-magCP[0]))/20)
+    print("gammaN = ", 10**(magCP[1]/20))
+elif dB_flag == False:
+    print("gammaDin = ", magP[0]/magCP[0])
+    print("gammaN = ", magCP[1])

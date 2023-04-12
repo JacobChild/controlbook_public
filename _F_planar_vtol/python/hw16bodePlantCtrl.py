@@ -9,7 +9,7 @@ import hw15bode as P15
 P10 = ctrlPD()
 
 # flag to define if using dB or absolute scale for M(omega)
-dB_flag = False
+dB_flag = P15.dB_flag
 
 # Assign plants from previous homework solution
 FtoH = P15.FtoH
@@ -17,12 +17,11 @@ TautoTheta = P15.TautoTheta
 ThetatoZ = P15.ThetatoZ
 
 # compute transfer function of the controllers
-term = 1.0/(P.mc + 2*P.mr)
-C_pid_FtoH = tf([term*P10.kdh, term*P10.kph, term*P10.kih], [1.0, 0.0, 0.0])
-term2 = 1.0/(P.Jc + 2*P.mr*P.d**2)
-C_pid_TautoTheta = tf([term2*P10.kdth, term2*P10.kpth], [1.0, 0.0])
-term3 = 1.0/(P.mc + 2*P.mr)
-C_pid_ThetatoZ = tf([-P15.Fe*term3*P10.kdz, -P15.Fe*term3*P10.kpz, -P15.Fe*term3*P10.kiz], [1.0, P.mu*term3, 0.0])
+C_pid_FtoH = tf([(P10.kdh + P10.kph * P10.sigma), (P10.kph + P10.kih*P10.sigma), P10.kih], [P10.sigma,1.0,0.0])
+
+C_pid_TautoTheta = tf([(P10.kdth + P10.kpth * P10.sigma), P10.kpth], [P10.sigma,1.0])
+
+C_pid_ThetatoZ = tf([(P10.kdz + P10.kpz * P10.sigma), P10.kpz], [P10.sigma,1.0])
 
 # plot them all with the plant on the same plot
 if __name__ == '__main__':
@@ -43,21 +42,27 @@ if __name__ == '__main__':
     
 
 #Problem F16 part b FtoH
-mag, phase, omega = bode(C_pid_FtoH, plot=False,
+mag, phase, omega = bode(FtoH*C_pid_FtoH, plot=False,
                              omega = [30.0], dB = dB_flag)
-gammaN_FtoH = mag
-print('gammaN_FtoH = ', gammaN_FtoH)
+if dB_flag == True:
+    mag = 20*np.log10(mag)
+    print("gammaN_FtoH = ", 10.0**(mag/20.0))
+elif dB_flag == False:
+    print("gammaN_FtoH = ", mag)
 
 #part c TautoTheta input disturbance, so difference between plant
-mag, phase, omega = bode(C_pid_TautoTheta, plot=False,
+magCP, phase, omega = bode(C_pid_TautoTheta*TautoTheta, plot=False,
                          omega = [2.0], dB = dB_flag)
 magP, phaseP, omegaP = bode(TautoTheta, plot=False,
                             omega = [2.0], dB = dB_flag)
-#convert to dB
-mag = 20*np.log10(mag)
-magP = 20*np.log10(magP)
-gammaDin_TautoTheta = 10**(-(mag - magP)/20.0)
-print("gammaDin_TautoTheta = ", gammaDin_TautoTheta)
+if dB_flag == True:
+    mag = 20*np.log10(magCP)
+    magP = 20*np.log10(magP)
+    gammaDin_TautoTheta = 10.0**((magP - magCP)/20.0)
+    print("gammaDin_TautoTheta = ", gammaDin_TautoTheta)
+elif dB_flag == False:
+    gammaDin_TautoTheta = magP/magCP
+    print("gammaDin_TautoTheta = ", gammaDin_TautoTheta)
 
 #part d find the sensor range for theta with measurement noise less than .1 deg
 rad = .1#*np.pi/180.0
@@ -68,11 +73,15 @@ root2 = (-P10.kdth - np.sqrt(P10.kdth**2 - 4*-P10.kpth*rad*(P.Jc + 2.0*P.mr*P.d*
 print("bounds for theta = ", root1, "and ", root2)
 
 #part e ThetatoZ tracking error gammar
-mag, phase, omega = bode(C_pid_ThetatoZ, plot=False,
+magCP, phase, omega = bode(C_pid_ThetatoZ*ThetatoZ, plot=False,
                          omega = [0.1, 0.01], dB = dB_flag)
 magP, phaseP, omegaP = bode(ThetatoZ, plot=False,
                             omega = [0.1, 0.01], dB = dB_flag)
-gammaRef_ThetatoZ = 1.0 / mag[0]
-print("gammaRef_ThetatoZ = ", gammaRef_ThetatoZ)
-gammaDout_ThetatoZ = 1.0 / mag[1]
-print("gammaDout_ThetatoZ = ", gammaDout_ThetatoZ)
+if dB_flag == True:
+    magCP = 20*np.log10(magCP)
+    print("gammaDout_ThetatoZ = ", 1.0/magCP[0])
+    print("gammaRef_ThetatoZ = ", 1.0/magCP[1])
+elif dB_flag == False:
+    print("gammaDout_ThetatoZ = ", 1.0/magCP[0])
+    print("gammaRef_ThetatoZ = ", 1.0/magCP[1])
+

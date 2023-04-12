@@ -1,5 +1,6 @@
 import VTOLParam as P
 from control import tf, bode
+import control as cnt
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -8,10 +9,13 @@ dB_flag = False
 
 # Compute plant transfer functions
 #compute the transfer function for F to H
-FtoH = tf([1.0/(P.mc+2*P.mr)], [1.0, 0.0])
-TautoTheta = tf([ 1.0/ (P.Jc+2*P.mr*P.d**2)], [1.0, 0.0])
+FtoH = tf([1.0/(P.mc+2*P.mr)], [1.0, 0.0,0.0])
+TautoTheta = tf([ 1.0/ (P.Jc+2*P.mr*P.d**2)], [1.0, 0.0, 0.0]) #? why was I short a 0? I think by accident
 Fe = (P.mc + 2*P.mr)*P.g
-ThetatoZ = tf([Fe/P.mu], [1.0, P.mu/(P.mc+2*P.mr), 0.0])
+#! wrong? ThetatoZ = tf([Fe/P.mu], [1.0, P.mu/(P.mc+2*P.mr), 0.0])
+ThetatoZ = tf([Fe/(P.mc+2*P.mr)], [1.0, P.mu/(P.mc+2*P.mr), 0.0])
+test1 = cnt.tf2ss(ThetatoZ)
+#print(test1)
 
 #plot the plant transfer functions
 if __name__ == '__main__':
