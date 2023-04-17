@@ -55,3 +55,5 @@ curlyA = sym.Matrix([[1, 5], [0, 1]])
 CCsym = sym.Matrix([[1, -5], [0, -1]])
 K1 = (alpha - littleaBigA) @ sym.Matrix.inv(curlyA) @ sym.Matrix.inv(CCsym)
 print("K1: ", K1)
+
+#create a 4x4 symbolic alphabet matrix
