@@ -139,7 +139,7 @@ def get_control_lead(omega_lead, M):
             M - the amount of gain at high frequencies (corresponds to PM boost)
             omega_lead - frequency where max PM will be added
     '''
-    Lead = tf([M, M*omega_lead / np.sqrt(M)], [1, omega_lead * np.sqrt(M)])
+    Lead = tf([np.sqrt(M), omega_lead], [1, omega_lead * np.sqrt(M)])
 
     return Lead
 

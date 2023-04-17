@@ -16,10 +16,10 @@ C_pid = P16.C_pid
 ###################################################################
 #   Control Design
 ###################################################################
-w_lead = 10.0
-M_lead = 3.0
-z_lag = 1.0
-M_lag = 40.0
+w_lead = 15.0
+M_lead = 0.01
+z_lag = 12.0
+M_lag = 1000.0
 p_lpf = 50.0
 
 C = C_pid \
@@ -71,15 +71,15 @@ if __name__=="__main__":
     #   Define Design Specifications
     #########################################
     #----------- noise specification --------
-    omega_n = 1000    # attenuate noise above this frequency
+    omega_n = 500    # attenuate noise above this frequency
     mag, phase, omega = bode(Plant * C_pid, dB=dB_flag,
                              omega=[omega_n])
-    gamma_n = 0.1*mag[0]    # attenuate noise by this amount
+    gamma_n = 0.001*mag[0]    # attenuate noise by this amount
     lt.add_spec_noise(gamma_n, omega_n, dB_flag)
 
     #----------- general tracking specification --------
-    omega_d = 0.07  # track signals below this frequency
-    gamma_d = 0.1   # tracking improvement over original system
+    omega_d = 0.1  # track signals below this frequency
+    gamma_d = 0.03   # tracking improvement over original system
     lt.add_spec_input_disturbance(gamma_d, omega_d,
                                   Plant*C_pid, dB_flag)
 

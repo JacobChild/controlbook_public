@@ -5,6 +5,7 @@ import loopShaping as L
 
 class ctrlLoopshape:
     def __init__(self, method="state_space"):
+        self.Ts = P.Ts
         if method == "state_space":
             self.x_C = np.zeros((L.C_ss.A.shape[0], 1))
             self.x_F = np.zeros((L.F_ss.A.shape[0], 1))
