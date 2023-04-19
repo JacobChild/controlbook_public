@@ -1,6 +1,7 @@
 import numpy as np
 import control as cnt
 import hummingbirdParam as P
+import sympy as sym
 
 
 class ctrlStateFeedbackIntegrator:

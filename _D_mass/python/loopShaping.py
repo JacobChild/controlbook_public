@@ -3,7 +3,7 @@ from control import tf, bode, margin, step_response, mag2db, tf2ss, c2d
 import numpy as np
 import massParam as P
 import hw16bodePlantCtrl as P16
-import loopshape_tools as lt
+import loopshape_tools as ls
 
 # flag to define if using dB or absolute scale for M(omega)
 dB_flag = P16.dB_flag
@@ -16,22 +16,17 @@ C_pid = P16.C_pid
 ###################################################################
 #   Control Design
 ###################################################################
-w_lead = 15.0
-M_lead = 0.01
-z_lag = 12.0
-M_lag = 1000.0
-p_lpf = 50.0
-
+#!descriptions z = , M = , p = the bandwidth/cut off frequency where the low pass filter starts to act
 C = C_pid \
-    * lt.get_control_lead(w_lead, M_lead) \
-    * lt.get_control_lag(z_lag, M_lag) \
-    * lt.get_control_lpf(p_lpf) \
+    * ls.lag(z=100.0, M = 2000.0) * ls.lpf(p=200.0) *ls.lead(w=20.0, M=300.0) 
+    #* ls.lag(z=4.5, M=500.0) * ls.lead(w=100.0, M=0.1) * ls.lpf(p=90.0)
+
 
 ###########################################################
 # add a prefilter to eliminate the overshoot
 ###########################################################
-F = tf(1, 1) \
-    * lt.get_control_lpf(3.0)
+F = tf(1, 1) * ls.lpf(p=3.0)
+
 
 ###########################################################
 # Extracting coefficients for controller and prefilter
@@ -40,13 +35,6 @@ C_num = np.asarray(C.num[0])
 C_den = np.asarray(C.den[0])
 F_num = np.asarray(F.num[0])
 F_den = np.asarray(F.den[0])
-
-###########################################################
-#  Convert Controller to State Space Equations if following
-#  method in 18.1.7
-###########################################################
-C_ss = tf2ss(C)  # convert to state space
-F_ss = tf2ss(F)  # convert to state space
 
 
 if __name__=="__main__":
@@ -71,17 +59,12 @@ if __name__=="__main__":
     #   Define Design Specifications
     #########################################
     #----------- noise specification --------
-    omega_n = 500    # attenuate noise above this frequency
-    mag, phase, omega = bode(Plant * C_pid, dB=dB_flag,
-                             omega=[omega_n])
-    gamma_n = 0.001*mag[0]    # attenuate noise by this amount
-    lt.add_spec_noise(gamma_n, omega_n, dB_flag)
-
+    omega_n=500.0
+    #? should gamma_n be straight 0.001 or what it has? ie gamma_n=0.1*mag[0]
+    mag, phase, omega = bode(Plant * C_pid, dB=dB_flag, omega=[omega_n])
+    ls.spec_noise(gamma_n=0.001, omega_n=omega_n, dB_flag=dB_flag)
     #----------- general tracking specification --------
-    omega_d = 0.1  # track signals below this frequency
-    gamma_d = 0.03   # tracking improvement over original system
-    lt.add_spec_input_disturbance(gamma_d, omega_d,
-                                  Plant*C_pid, dB_flag)
+    ls.spec_disturbance(gamma_d=0.03, omega_d=0.1, system=Plant*C_pid, dB_flag=dB_flag)
 
     ## plot the effect of adding the new compensator terms
     mag, phase, omega = bode(Plant * C, dB=dB_flag,

@@ -1,6 +1,6 @@
 import numpy as np
 from control import c2d, tf
-import massParam as P
+import VTOLParam as P
 import loopShaping as L
 
 class ctrlLoopshape:
@@ -12,20 +12,35 @@ class ctrlLoopshape:
             self.prefilter = digitalFilter(L.F.num, L.F.den, P.Ts)
             self.control = digitalFilter(L.C.num, L.C.den, P.Ts)
         self.method = method
-    
 
-    def update(self, z_r, y):
-        zCurrent = y[0][0]
+    def update(self, PosRef, y):
+        z = y[0][0]
+        h = y[1][0]
+        theta = y[2][0]
+        z_r = PosRef[0][0]
+        h_r = PosRef[1][0]
+        
         # prefilter the reference
         z_r_filtered = self.prefilter.update(z_r)
+        h_r_filtered = self.prefilter.update(h_r)
          # filtered error signal
-        error = z_r_filtered - zCurrent
+        error_z = z_r_filtered - z
+        error_h = h_r_filtered - h
         # update controller
-        F_tilde = self.control.update(error)
+        F_tilde = self.control.update(error_h)
+        # compute feedback linearization torque tau_fl
+        Fe = (P.mc + 2.0*P.mr)*P.g/np.cos(theta)
         # compute total torque
-        Force = saturate(F_tilde, P.F_max)
-        return Force
-    
+        Fout = saturate(F_tilde + Fe, P.fmax)
+        
+        #Lateral control
+        tautilde = self.control.update(error_z)
+        tausat = saturate(tautilde, P.fmax * P.d *2.0)
+        
+        fout1 = np.array([[Fout.item(0)], [tausat]])
+        
+        return fout1
+
 def saturate(u, limit):
     if abs(u) > limit:
         u = limit * np.sign(u)
@@ -71,7 +86,6 @@ class transferFunction:
     def update(self, u):
         x = self.rk4(u)
         y = self.C @ x + self.D * u
-        #print(self.C)
         return y.item(0)
 
     def f(self, state, u):

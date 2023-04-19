@@ -66,8 +66,8 @@ class ctrlStateFeedback:
         Dlat = np.array([[0.0],
                          [0.0]])
         Cr = np.array([[1.0, 0.0, 0.0, 0.0]])
-        #A1 = np.vstack((np.hstack((Alat, np.zeros((np.size(Alat,1),1)))),
-                        #np.hstack((-Cr, np.array([[0.0]]))) ))
+        A1 = np.vstack((np.hstack((Alat, np.zeros((np.size(Alat,1),1)))),
+                        np.hstack((-Cr, np.array([[0.0]]))) ))
         #B1 = np.vstack( (Blat, 0.0) )
         #lateral gain calculation
         des_char_poly_lat = np.convolve(

@@ -28,8 +28,8 @@ while t < P.t_end: #main simulation loop
     while t < t_next_plot:
         #Get referenced inputs from signal generators
         zInput = ZInputRef.square(t)
-        d = disturbance.step(t) #Get disturbance input
-        n = noise.random(t) #noise input 
+        d = 0.0#disturbance.step(t) #Get disturbance input
+        n = 0.0#noise.random(t) #noise input 
         
         #update controller and dynamics
         u = controller.update(zInput, y + n) 
