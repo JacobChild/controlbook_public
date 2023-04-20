@@ -8,15 +8,15 @@
 #include <math.h>
 
 struct {
-  float wn_th = 
-  float zeta_th = 
-  float pi_lon = 
-  float wn_phi = 
-  float zeta_phi = 
-  float wn_psi = 
-  float zeta_psi = 
-  float pi_lat = 
-  float km = 
+  float wn_th = 2.4;
+  float zeta_th = .707;
+  float pi_lon = 4.0;
+  float wn_phi = 10.0;
+  float zeta_phi = .707;
+  float wn_psi = 1.6;
+  float zeta_psi = .707;
+  float pi_lat = 1.9;
+  float km = .276;
 } gains;
 
 #include "tuning_utilities.h"
@@ -106,24 +106,24 @@ class CtrlStateFeedbackIntegrator {
       // tune gains
       tuneGains();
       
-      float alpha1_lon = 
-      float alpha2_lon = 
-      float alpha3_lon = 
-      float k_theta = 
-      float k_thetadot = 
-      float ki_lon = 
-      float alpha1_lat = 
-      float alpha2_lat = 
-      float alpha3_lat = 
-      float alpha4_lat = 
-      float alpha5_lat = 
+      float alpha1_lon = gains.pi_lon + 2*gains.wn_th*gains.zeta_th;
+      float alpha2_lon = 2*gains.pi_lon*gains.wn_th*gains.zeta_th + pow(gains.wn_th,2);
+      float alpha3_lon = gains.pi_lon*pow(gains.wn_th,2) ;
+      float k_theta = alpha2_lon/P.b_theta;
+      float k_thetadot = alpha1_lon/P.b_theta;
+      float ki_lon = -alpha3_lon/P.b_theta;
+      float alpha1_lat = gains.pi_lat + 2*gains.wn_phi*gains.zeta_phi + 2*gains.wn_psi*gains.zeta_psi;
+      float alpha2_lat = 2*gains.pi_lat*gains.wn_phi*gains.zeta_phi + 2*gains.pi_lat*gains.wn_psi*gains.zeta_psi + pow(gains.wn_phi,2) + 4*gains.wn_phi*gains.wn_psi*gains.zeta_phi*gains.zeta_psi + pow(gains.wn_psi,2);
+      float alpha3_lat = gains.pi_lat*pow(gains.wn_phi,2) + 4*gains.pi_lat*gains.wn_phi*gains.wn_psi*gains.zeta_phi*gains.zeta_psi + gains.pi_lat*pow(gains.wn_psi,2) + 2*pow(gains.wn_phi,2)*gains.wn_psi*gains.zeta_psi + 2*gains.wn_phi*pow(gains.wn_psi,2)*gains.zeta_phi;
+      float alpha4_lat = 2*gains.pi_lat*pow(gains.wn_phi,2)*gains.wn_psi*gains.zeta_psi + 2*gains.pi_lat*gains.wn_phi*pow(gains.wn_psi,2)*gains.zeta_phi + pow(gains.wn_phi,2)*pow(gains.wn_psi,2);
+      float alpha5_lat = gains.pi_lat*pow(gains.wn_phi,2)*pow(gains.wn_psi,2);
       float b1 = 1/P.J1x;
       float a1 = P.ellT*P.fe/(P.JT+P.J1z);
-      float k_phi = 
-      float k_psi = 
-      float k_phidot = 
-      float k_psidot = 
-      float ki_lat = 
+      float k_phi = alpha2_lat/b1;
+      float k_psi = alpha4_lat/(a1*b1);
+      float k_phidot = alpha1_lat/b1;
+      float k_psidot = alpha3_lat/(a1*b1);
+      float ki_lat = -alpha5_lat/(a1*b1);
       
       // compute theta and theta_dot (with quadratic prediction)
       float theta_d1 = sensors.pitch;
@@ -142,21 +142,21 @@ class CtrlStateFeedbackIntegrator {
 
       theta = sensors.pitch;
       // compute feedback linearized force      
-      float force_fl = 
+      float force_fl = (P.m1*P.ell1 + P.m2*P.ell2)*P.g*cos(theta) / P.ellT;
       // compute error
       float error_lon = reference.theta - theta;      
       float error_lat = reference.psi - psi; 
       // update integrator 
-      integrator_lon +=   
-      integrator_lat += 
+      integrator_lon += (Ts / 2.0) * (error_lon + error_lon_d1);  
+      integrator_lat += (Ts / 2.0) * (error_lat + error_lat_d1);
       // longitudinal control
-      float force =                      
+      float force = force_fl - k_theta *theta - k_thetadot *theta_dot - ki_lon *integrator_lon;                     
       // lateral control
-      float torque = 
+      float torque = -k_phi *phi - k_psi *psi - k_phidot *phi_dot - k_psidot *psi_dot - ki_lat *integrator_lat;
       // convert force and torque to pwm and send to motors
       float left_pwm = (force+torque/P.d)/(2.0*gains.km);
       float right_pwm = (force-torque/P.d)/(2.0*gains.km);
-      rotors.update(left_pwm, right_pwm); 
+      rotors.update(left_pwm-.03, right_pwm+.03); 
 
       // update all delayed variables
       theta_d3 = theta_d2;
@@ -187,17 +187,17 @@ class CtrlStateFeedbackIntegrator {
 
     void printToSerial(float theta, float theta_ref, float psi, float psi_ref) {
       // print commanded values
-      Serial.print("Theta_ref:");
-      Serial.print(theta_ref*180/PI);
+      Serial.print("Th_r:");
+      Serial.print(theta_ref*180/3.14);
       Serial.print(",");
-      Serial.print("Theta:");
-      Serial.print(theta*180/PI);
+      Serial.print("Th:");
+      Serial.print(theta*180/3.14);
       Serial.print(",");
-      Serial.print("Psi_ref:");
-      Serial.print(psi_ref*180/PI);
+      Serial.print("Psi_r:");
+      Serial.print(psi_ref*180/3.14);
       Serial.print(",");
       Serial.print("Psi:");
-      Serial.print(psi*180/PI);
+      Serial.print(psi*180/3.14);
       Serial.println(",");
     }
 };

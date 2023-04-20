@@ -48,10 +48,25 @@ ALatAug = np.vstack((np.hstack((ALat, np.zeros((np.size(ALat,1),1)))),
                      np.hstack((-CrLat, np.array([[0.0]]))) ))
 BLatAug = np.vstack((BLat, 0.0))
 
-#Create the controlability matrix
+#3 Create the controlability matrix
 CLoncnt = cnt.ctrb(ALonAug, BLonAug)
 print("\n")
 print(CLoncnt)
 print("\n")
 CLatcnt = cnt.ctrb(ALatAug, BLatAug)
 print(CLatcnt)
+#inverse them
+CLoncntInv = np.linalg.inv(CLoncnt)
+CLatcntInv = np.linalg.inv(CLatcnt)
+print("\n")
+print(CLoncntInv)
+print("\n")
+print(CLatcntInv)
+
+#4 check the determinants of the controlability matrices and see if they are s^3 and s^5 respectively
+#? is that the same as checking rank?
+print("\n")
+if np.linalg.matrix_rank(CLoncnt) == 3 and np.linalg.matrix_rank(CLatcnt) == 5:
+    print("The system is controllable")
+else:
+    print("The system is not controllable")
