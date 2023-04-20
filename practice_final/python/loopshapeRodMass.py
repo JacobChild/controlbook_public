@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from control import TransferFunction as tf
 from control import tf, bode, margin, step_response, mag2db
 import numpy as np
-import loopshapeTools as ls
+import loopshape_ools as ls
 from ctrlPID import ctrlPID
 PID = ctrlPID()
 

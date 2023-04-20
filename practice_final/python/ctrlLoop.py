@@ -1,7 +1,7 @@
 import rodMassParam as P
 import loopshapeRodMass as L
 import numpy as np
-from control import tf, c2d
+from control import tf, c2d, tf2ss
 #from discreteFilter import discreteFilter
 #from transferFunction import transferFunction
 
@@ -64,6 +64,15 @@ class discreteFilter:
 
 class transferFunction:
     def __init__(self, num, den, Ts):
+        self.Ts = Ts
+        # sys = tf(num[0], den[0])
+        # sys_ss = tf2ss(sys)
+        # self.A = sys_ss.A
+        # self.B = sys_ss.B
+        # self.C = sys_ss.C
+        # self.D = sys_ss.A
+        # n = den.shape[1]
+        
         # expects num and den to be numpy arrays of
         # shape (1,m+1) and (1,n+1)
         m = num.shape[1]

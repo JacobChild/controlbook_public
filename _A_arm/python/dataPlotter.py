@@ -1,3 +1,4 @@
+from matplotlib import get_backend
 import matplotlib.pyplot as plt 
 from matplotlib.lines import Line2D
 import numpy as np
@@ -12,6 +13,7 @@ class dataPlotter:
         self.num_cols = 1    # Number of subplot columns
         # Crete figure and axes handles
         self.fig, self.ax = plt.subplots(self.num_rows, self.num_cols, sharex=True)
+        move_figure(self.fig, 500, 500)
         # Instantiate lists to hold the time and data histories
         self.time_history = []  # time
         self.theta_ref_history = []  # reference angle
@@ -21,6 +23,7 @@ class dataPlotter:
         self.handle = []
         self.handle.append(myPlot(self.ax[0], ylabel='theta(deg)', title='Arm Data'))
         self.handle.append(myPlot(self.ax[1], xlabel='t(s)', ylabel='torqe(N-m)'))
+
 
     def update(self, t, reference, states, ctrl):
         # update the time history of all plot variables
@@ -109,4 +112,24 @@ class myPlot:
         self.ax.autoscale()
         plt.draw()
            
+def move_figure(f, x, y):
+    """Move figure's upper left corner to pixel (x, y)"""
+    figmgr = plt.get_current_fig_manager()
+    figmgr.canvas.manager.window.raise_()
+    geom = figmgr.window.geometry()
+    x,y,dx,dy = geom.getRect()
+    figmgr.window.setGeometry(10, 10, dx, dy)
+    # backend = get_backend()
+    # if backend == 'TkAgg':
+    #     f.canvas.manager.window.wm_geometry("+%d+%d" % (x, y))
+    # elif backend == 'WXAgg':
+    #     f.canvas.manager.window.SetPosition((x, y))
+    # else:
+    #     # This works for QT and GTK
+    #     # You can also use window.setGeometry
+    #     #f.canvas.manager.window.move(x, y)
+    #     f.canvas.manager.setGeometry(x, y)
 
+# f, ax = plt.subplots()
+# move_figure(f, 500, 500)
+# plt.show()
