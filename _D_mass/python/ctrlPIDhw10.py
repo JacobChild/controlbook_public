@@ -25,7 +25,6 @@ class ctrlPID:
         #integrator and differentiator
         self.zdot = 0.0 #estimated derivative of z
         self.z_d1 = 0.0 #z delayed by one sample
-        self.error_dot = 0.0 #estimated derivative of error
         self.error_d1 = 0.0 #error delayed by one sample
         self.integrator = 0.0 #integrator
         
