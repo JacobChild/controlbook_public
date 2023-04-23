@@ -27,13 +27,14 @@ while t < P.t_end:
         d = 0.5
         n = 0.0  #noise.random(t)
         u, xhat, dhat = controller.update(r, y + n)
-        y = rodMass.update(u + d)
+        #print("u: ", u)
+        y = rodMass.update(u.item(0) + d)
         t = t + P.Ts
     # update animation and data plots
     animation.update(rodMass.state)
     dataPlot.update(t, r, rodMass.state, u)
     dataPlotObserver.update(t, rodMass.state, xhat, d, dhat)
-    plt.pause(0.0001)
+    #plt.pause(0.0001)
 
 # Keeps the program from closing until the user presses a button.
 print('Press key to close')
