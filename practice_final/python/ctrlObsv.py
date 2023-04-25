@@ -105,12 +105,12 @@ class ctrlObsv:
         self.integrator = self.integrator + (P.Ts/2.0)*(error + self.error_d1)
         self.error_d1 = error #update the error
         #copmute the state feedback controller
-        th_eq = theta_hat 
+        th_eq = theta_hat #? should I use 0.0 or theta_hat?
         tau_eq =  P.m*P.g*P.ell * np.cos(th_eq) + P.k1 * th_eq + P.k2 * th_eq**3
         Tau_tilde = -self.K @ x_hat - self.Ki * self.integrator - d_hat
         tau = self.saturate(Tau_tilde.item(0)+tau_eq)
         # self.Tau_d1 = tau
-        self.Tau_d1 = Tau_tilde
+        self.Tau_d1 = Tau_tilde #make sure down below in the observer that Tau_d1 *does not* include Tau_eq
         return tau, x_hat, d_hat
 
     def update_observer(self, y):

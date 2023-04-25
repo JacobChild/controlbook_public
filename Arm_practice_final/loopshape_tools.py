@@ -11,7 +11,7 @@ def spec_noise(gamma, omega, flag):
         plt.subplot(211)
         plt.plot(w,
                  (20 * np.log10(gamma)) * np.ones(len(w)),
-                 color='r',
+                 color='g',
                  label='noise spec')
 
 
@@ -22,7 +22,7 @@ def spec_disturbance(gamma, omega, flag):
         plt.subplot(211)
         plt.plot(w,
                  20*np.log10(1.0/gamma)*np.ones(len(w)),
-                 color='r',
+                 color='g',
                  label='disturbance spec')
 
 def spec_input_disturbance(gamma_d, omega_d, system, dB_flag=False):
@@ -44,7 +44,7 @@ def spec_tracking(gamma, omega, flag):
         plt.subplot(211)
         plt.plot(w,
                  20*np.log10(1/gamma)*np.ones(len(w)),
-                 color='r',
+                 color='g',
                  label='tracking spec')
 
 

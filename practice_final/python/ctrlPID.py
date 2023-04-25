@@ -12,7 +12,7 @@ class ctrlPID:
         a0 = P.k1 / (P.m * P.ell**2)
         self.kd = (2.0*zeta*wn - a1) / b0 #these are general equations and should work for all PD systems
         self.kp = (wn**2 - a0) / b0 
-        self.ki = 1.0 #Integrator gain that I tune
+        self.ki = 3.0 #Integrator gain that I tune
         print("kd: ", self.kd, " kp: ", self.kp)
         #other needed parameters
         self.sigma = 0.005
@@ -30,16 +30,17 @@ class ctrlPID:
         theta = y#[0][0]
         error = theta_r - theta
         #integrate on error
-        #!do I need an anti-windup scheme?
         self.integrator = self.integrator + (P.Ts/2.0)*(error + self.error_d1)
         #compute derivative
         self.thetadot = self.beta*self.thetadot + (1.0-self.beta) * ((theta - self.theta_d1) / P.Ts)
         tau_tilde = self.kp * error - self.kd * self.thetadot + self.ki * self.integrator
         #?no feedback linearized force as I did the Jacobian linearization earlier
-        tau = self.saturate(tau_tilde)
+        th_eq = 0.0
+        tau_eq =  P.m*P.g*P.ell * np.cos(th_eq) + P.k1 * th_eq + P.k2 * th_eq**3
+        tau = self.saturate(tau_tilde+tau_eq)
         #integrator anti windup just in case
         if self.ki != 0.0:
-            self.integrator =  self.integrator + P.Ts/self.ki*(tau - tau_tilde) #?ie if it is saturating decrease the integrator
+            self.integrator =  self.integrator + P.Ts/self.ki*(tau - (tau_tilde+tau_eq)) #?ie if it is saturating decrease the integrator
         
         #update delayed variables
         self.error_d1 = error
