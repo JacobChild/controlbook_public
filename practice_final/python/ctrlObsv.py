@@ -5,10 +5,12 @@ import control as cnt
 class ctrlObsv:
     def __init__(self):
         #tuning parameters
-        tr = 1.0
-        tr_obs = 0.1
+        tr = 0.1
+        tr_obs = tr/5.0 #this satisfies the 5x faster requirment
         zeta = 0.707
-        integrator_pole = -10.0
+        wn = 2.2/tr 
+        wn_obs = 2.2/tr_obs 
+        integrator_pole = -10.0 #make sure when I make the poly this is a positive value so it comes out negative in the left hand plane
         zeta_obs = 0.707
         self.limit = P.tau_max
         
@@ -25,7 +27,7 @@ class ctrlObsv:
                         np.hstack((-self.C, np.array([[0.0]]))) ))
         self.B1 = np.vstack((self.B, 0.0))
         #gain calculation
-        wn = 2.2/tr 
+        
         des_char_poly = np.convolve([1, 2 * zeta*wn, wn**2],
                                     [1, -integrator_pole]) #!when is the integrator pole negative vs positive?
         des_poles = np.roots(des_char_poly)
@@ -37,22 +39,23 @@ class ctrlObsv:
             self.K = self.K1[0][0:2]
             self.Ki = self.K1[0][2]
         print('K: ', self.K)
-        print('kr: ', self.Ki)
-        print(des_poles)
+        print('ki: ', self.Ki)
+        #print(des_poles)
         
         #? I did the below because of 3.2, but then 3.3 immediately wants a disturbance observer?
         #observer design
-        wn_obs = 2.2/tr_obs 
-        des_obs_char_poly = [1,2*zeta_obs*wn_obs, wn_obs**2]
-        des_obs_poles = np.roots(des_obs_char_poly)
-        #compute the gains if the system is observable
-        if np.linalg.matrix_rank(cnt.ctrb(self.A.T, self.C.T)) != 2:
-            print("The system is not observable")
-        else: 
-            self.L = cnt.place(self.A.T, self.C.T, des_obs_poles).T
-        print('L.T: ', self.L.T)
+       
+        # des_obs_char_poly = [1,2*zeta_obs*wn_obs, wn_obs**2]
+        # des_obs_poles = np.roots(des_obs_char_poly)
+        # #compute the gains if the system is observable
+        # if np.linalg.matrix_rank(cnt.ctrb(self.A.T, self.C.T)) != 2:
+        #     print("The system is not observable")
+        # else: 
+        #     self.L = cnt.place(self.A.T, self.C.T, des_obs_poles).T
+        # print('L.T: ', self.L.T)
         
         #?3.3 for disturbance observer
+        #do this
         #augmented matrices for observer design
         self.A2 = np.concatenate((
                             np.concatenate((self.A, self.B), axis=1),
@@ -62,21 +65,25 @@ class ctrlObsv:
         self.C2 = np.concatenate((self.C, np.zeros((1, 1))), axis=1)
         
         #disturbance observer design
-        dist_obs_pole = -1.0
+        dist_obs_pole = -1.0 #same as above, both negative or both positive
         wn_obs = 2.2/tr_obs
         des_obs_char_poly = np.convolve([1, 2*zeta_obs*wn_obs, wn_obs**2],
-                                        [1.0, dist_obs_pole]) #! should this pole input be negative or positive?
+                                        [1.0, -dist_obs_pole]) #! should this pole input be negative or positive?
         des_obs_poles = np.roots(des_obs_char_poly)
         #compute the gains if the system is observable
         if np.linalg.matrix_rank(cnt.ctrb(self.A2.T, self.C2.T)) != 3:
             print("The system is not observable")
         else: 
-            self.L2 = cnt.place(self.A2.T, self.C2.T, des_obs_poles).T
-        print('L2.T: ', self.L2.T)
+            self.L2 = cnt.acker(self.A2.T, self.C2.T, des_obs_poles).T
+        print('L2: ', self.L2)
+        print("\n")
+        print('A2: ', self.A2)
+        print("\n")
+        print('B1: ', self.B1)
+        print("\n")
+        print("C2: ", self.C2)
         
-        # dirty derivative setup
-        self.sigma = 0.05 #dirty derivative gain
-        self.beta = (2.0 * self.sigma - P.Ts) / (2.0 * self.sigma + P.Ts) #dirty derivative gain
+        #variables to stay behind
         self.thetadot = 0.0 #estimated derivative of z
         self.theta_d1 = 0.0 #z delayed by one sample
         self.integrator = 0.0
@@ -98,9 +105,12 @@ class ctrlObsv:
         self.integrator = self.integrator + (P.Ts/2.0)*(error + self.error_d1)
         self.error_d1 = error #update the error
         #copmute the state feedback controller
-        Tau_tilde = self.K @ x_hat - self.Ki * self.integrator - d_hat
-        tau = self.saturate(Tau_tilde)
-        self.Tau_d1 = tau
+        th_eq = theta_hat 
+        tau_eq =  P.m*P.g*P.ell * np.cos(th_eq) + P.k1 * th_eq + P.k2 * th_eq**3
+        Tau_tilde = -self.K @ x_hat - self.Ki * self.integrator - d_hat
+        tau = self.saturate(Tau_tilde.item(0)+tau_eq)
+        # self.Tau_d1 = tau
+        self.Tau_d1 = Tau_tilde
         return tau, x_hat, d_hat
 
     def update_observer(self, y):
