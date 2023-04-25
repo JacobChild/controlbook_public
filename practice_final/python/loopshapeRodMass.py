@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # calculate bode plot and gain and phase margin for original PID * plant dynamics
     mag, phase, omega = bode(Plant * C_pid, dB=True,
                              omega=np.logspace(-3, 5),
-                             Plot=True, label="$C_{pid}(s)P(s)$")
+                             Plot=True, label="$P(s)C_{pid}(s)$")
 
     gm, pm, Wcg, Wcp = margin(Plant * C_pid)
     print("for original C_pid system:")
@@ -77,10 +77,10 @@ if __name__ == "__main__":
     # plot the effect of adding the new compensator terms
     mag, phase, omega = bode(Plant * C, dB=dB_flag,
                              omega=np.logspace(-4, 5),
-                             plot=True, label="$C_{final}(s)P(s)$")
+                             plot=True, label="$P(s)C_{final}(s)$")
 
     gm, pm, Wcg, Wcp = margin(Plant * C)
-    print("for final C*P:")
+    print("for final P*C:")
     if dB_flag is True:
         print(" pm: ", pm, " Wcp: ", Wcp, "gm: ", mag2db(gm), " Wcg: ", Wcg)
     elif dB_flag is False:
