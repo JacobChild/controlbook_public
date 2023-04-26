@@ -1,4 +1,4 @@
-import rodMassParam as P
+import slopedMassParam as P
 import matplotlib.pyplot as plt
 from control import TransferFunction as tf
 from control import tf, bode, margin, step_response, mag2db
@@ -8,26 +8,29 @@ from ctrlPID import ctrlPID
 PID = ctrlPID()
 
 # Compute plant transfer functions
-Plant = tf([1.0/(P.m * P.ell**2)], #numerator
-           [1.0, P.b/(P.m * P.ell**2), P.k1 / (P.m * P.ell**2)]) #this comes from the plant, make sure each term has something, even if a 0.0
+Plant = tf([1.0/(P.m )], #numerator
+           [1.0, P.b/(P.m), P.k1 / (P.m)]) #this comes from the plant, make sure each term has something, even if a 0.0
 C_pid = tf([(PID.kd+PID.kp*PID.sigma), 
             (PID.kp+PID.ki*PID.sigma), 
             PID.ki],
            [PID.sigma, 1, 0]) # this should be the same for every PID controller I believe
+
 PLOT = True
-#PLOT = False
 dB_flag = True
 
 #######################################################################
 #   Control Design
 #######################################################################
-C = C_pid * ls.lead(w=22.149,M=10.0) * ls.lag(z=30.0, M =25.0) * ls.lpf(p=100.0)
+C = C_pid * ls.lead(w=14.7769,M=125.0) * ls.lag(z=12.0, M =120.0) * ls.lpf(p=27.0)
 #lead is for phase margin, lag is for disturbances/tracking, lpf is for noise
+print('C(s)= ', C)
 
 ###########################################################
 # add a prefilter to eliminate the overshoot
 ###########################################################
-F = tf(1, 1) * ls.lpf(p=5.0) #originally this was p=3.0 from the example I think?
+F = tf(1, 1) * ls.lpf(p=3.0) #originally this was p=3.0 from the example I think?
+print('F(s)= ', F)
+
 ##############################################
 #  Convert Controller to State Space Equations if following method in 18.1.7
 ##############################################
@@ -42,20 +45,21 @@ if __name__ == "__main__":
         
     #### Code added to find gammaN and gammaR and to plot the noise and tracking specifications
     #for the controller
-    #Also quick code to plot just the plant
+    # #Also quick code to plot just the plant
     mag, phase, omega = bode(Plant, dB=True,
                              omega=np.logspace(-3, 5),
                              Plot=True, label="$P(s)$")
-
+    
     gm, pm, Wcg, Wcp = margin(Plant * C_pid)
+    
     magCP, phaseCP, omegaCP = bode(Plant*C_pid, plot=False,
-                            omega = [0.001, 100.0], dB=dB_flag) #TODO fill out these omega's for gammaN and gammaR
+                            omega = [0.01, 1000.0], dB=dB_flag) #TODO fill out these omega's for gammaN and gammaR
     mag4Plt, phase4Plt, omega4Plt = bode(Plant*C_pid, plot=False,
-                            omega = [0.02, 2000.0], dB=dB_flag) #TODO fill out these omegas for the tracking and noise specifications
+                            omega = [0.1, 1000.0], dB=dB_flag) #TODO fill out these omegas for the tracking and noise specifications
     
     #Tracking and noise specifications
-    ls.spec_tracking(gamma=0.1*1.0/mag4Plt[0], omega=0.02, flag=dB_flag) #tracking specification, the 0.1 is a "factor of 10", omega is at where
-    ls.spec_noise(gamma=0.1*mag4Plt[1], omega=2000.0, flag=dB_flag)
+    ls.spec_tracking(gamma=0.1*1.0/mag4Plt[0], omega=0.1, flag=dB_flag) #tracking specification, the 0.1 is a "factor of 10", omega is at where
+    ls.spec_noise(gamma=0.1*mag4Plt[1], omega=1000.0, flag=dB_flag)
    
     
     print("MagCP: ", magCP)
@@ -72,6 +76,8 @@ if __name__ == "__main__":
     
     ##### End of my input stuff
     
+    
+    
     # calculate bode plot and gain and phase margin for original PID * plant dynamics
     mag, phase, omega = bode(Plant * C_pid, dB=True,
                              omega=np.logspace(-3, 5),
@@ -87,11 +93,13 @@ if __name__ == "__main__":
     #########################################
     #   Define Design Specifications
     #########################################
+    # specs go here
+    # ls.spec_...
 
     # plot the effect of adding the new compensator terms
     mag, phase, omega = bode(Plant * C, dB=dB_flag,
                              omega=np.logspace(-4, 5),
-                             plot=True, label="$P(s)C_{final}(s)$")
+                             Plot=True, label="$P(s)C_{final}(s)$")
 
     gm, pm, Wcg, Wcp = margin(Plant * C)
     print("for final P*C:")
@@ -119,9 +127,9 @@ if __name__ == "__main__":
     fig = plt.figure(2)
     plt.clf()
     plt.grid(True)
-    mag, phase, omega = bode(CLOSED_R_to_Y, dB=dB_flag, plot=True,
+    mag, phase, omega = bode(CLOSED_R_to_Y, dB=dB_flag, Plot=True,
                              color=[0, 0, 1], label='closed-loop $\\frac{Y}{R}$ - no pre-filter')
-    mag, phase, omega = bode(CLOSED_R_to_Y_with_F, dB=dB_flag, plot=True,
+    mag, phase, omega = bode(CLOSED_R_to_Y_with_F, dB=dB_flag, Plot=True,
                              color=[0, 1, 0], label='closed-loop $\\frac{Y}{R}$ - with pre-filter')
     fig.axes[0].set_title('Closed-Loop Bode Plot')
     fig.axes[0].legend()
