@@ -13,7 +13,7 @@ class ctrlPID:
         self.kd = (2.0*zeta*wn - a1) / b0 #these are general equations and should work for all PD systems
         self.kp = (wn**2 - a0) / b0 
         self.ki = 3.0 #Integrator gain that I tune
-        print("kd: ", self.kd, " kp: ", self.kp)
+        print("kd: ", self.kd, " kp: ", self.kp, " ki: ", self.ki)
         #other needed parameters
         self.sigma = 0.005
         self.Ts = P.Ts
@@ -38,7 +38,7 @@ class ctrlPID:
         th_eq = 0.0
         tau_eq =  P.m*P.g*P.ell * np.cos(th_eq) + P.k1 * th_eq + P.k2 * th_eq**3
         tau = self.saturate(tau_tilde+tau_eq)
-        #integrator anti windup just in case
+        #integrator anti windup
         if self.ki != 0.0:
             self.integrator =  self.integrator + P.Ts/self.ki*(tau - (tau_tilde+tau_eq)) #?ie if it is saturating decrease the integrator
         

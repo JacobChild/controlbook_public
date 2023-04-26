@@ -8,8 +8,8 @@ from ctrlPID import ctrlPID
 PID = ctrlPID()
 
 # Compute plant transfer functions
-Plant = tf([1.0/(P.m * P.ell**2)],
-           [1.0, P.b/(P.m * P.ell**2), P.k1 / (P.m * P.ell**2)]) #this comes from the plant
+Plant = tf([1.0/(P.m * P.ell**2)], #numerator
+           [1.0, P.b/(P.m * P.ell**2), P.k1 / (P.m * P.ell**2)]) #this comes from the plant, make sure each term has something, even if a 0.0
 C_pid = tf([(PID.kd+PID.kp*PID.sigma), 
             (PID.kp+PID.ki*PID.sigma), 
             PID.ki],
@@ -27,7 +27,7 @@ C = C_pid * ls.lead(w=22.149,M=10.0) * ls.lag(z=30.0, M =25.0) * ls.lpf(p=100.0)
 ###########################################################
 # add a prefilter to eliminate the overshoot
 ###########################################################
-F = F = tf(1, 1) * ls.lpf(p=5.0)
+F = tf(1, 1) * ls.lpf(p=5.0) #originally this was p=3.0 from the example I think?
 ##############################################
 #  Convert Controller to State Space Equations if following method in 18.1.7
 ##############################################
@@ -38,15 +38,16 @@ F_den = np.asarray(F.den[0])
 
 if __name__ == "__main__":
     # calculate bode plot and gain and phase margin for just the plant dynamics
-    #***added by Jacob Child
+        #for the above see the quick code just below
+        
+    #### Code added to find gammaN and gammaR and to plot the noise and tracking specifications
+    #for the controller
+    #Also quick code to plot just the plant
     mag, phase, omega = bode(Plant, dB=True,
                              omega=np.logspace(-3, 5),
                              Plot=True, label="$P(s)$")
 
     gm, pm, Wcg, Wcp = margin(Plant * C_pid)
-    
-    #### Code added to find gammaN and gammaR and to plot the noise and tracking specifications
-    #for the controller
     magCP, phaseCP, omegaCP = bode(Plant*C_pid, plot=False,
                             omega = [0.001, 100.0], dB=dB_flag) #TODO fill out these omega's for gammaN and gammaR
     mag4Plt, phase4Plt, omega4Plt = bode(Plant*C_pid, plot=False,
@@ -63,6 +64,11 @@ if __name__ == "__main__":
     print(" pm: ", pm, " Wcp: ", Wcp, "gm: ", gm, " Wcg: ", Wcg)
     print("gammaR = ", 1.0/magCP[0])
     print("gammaN = ", magCP[1])
+    #A few additional print statements
+    print("\n")
+    print("C(s): ", C)
+    print("\n")
+    print("F(s): ", F)
     
     
     # calculate bode plot and gain and phase margin for original PID * plant dynamics

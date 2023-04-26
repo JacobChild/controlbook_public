@@ -1,4 +1,4 @@
-import rodMassParam as P
+import armParam as P
 import matplotlib.pyplot as plt
 from control import TransferFunction as tf
 from control import tf, bode, margin, step_response, mag2db
@@ -8,8 +8,12 @@ from ctrlPID import ctrlPID
 PID = ctrlPID()
 
 # Compute plant transfer functions
-Plant = 
-C_pid = 
+Plant = tf([3.0/(P.m * P.ell**2)],
+           [1.0, 3.0*P.b/(P.m * P.ell**2), 0.0])
+C_pid = tf([(PID.kd+PID.kp*PID.sigma), 
+            (PID.kp+PID.ki*PID.sigma), 
+            PID.ki],
+           [PID.sigma, 1, 0]) # this should be the same for every PID controller I believe
 PLOT = True
 #PLOT = False
 dB_flag = True
@@ -17,12 +21,13 @@ dB_flag = True
 #######################################################################
 #   Control Design
 #######################################################################
-C = 
+C = C_pid * ls.lead(w=13.375,M=11.5) * ls.lag(z=30.0, M =25.0) * ls.lpf(p=100.0)
+#lead is for phase margin, lag is for disturbances/tracking, lpf is for noise
 
 ###########################################################
 # add a prefilter to eliminate the overshoot
 ###########################################################
-F = 
+F = tf(1, 1) * ls.lpf(p=5.0) #originally this was p=3.0 from the example I think?
 ##############################################
 #  Convert Controller to State Space Equations if following method in 18.1.7
 ##############################################
@@ -38,11 +43,44 @@ if __name__ == "__main__":
                              Plot=True, label="$P(s)C_{pid}(s)$")
 
     gm, pm, Wcg, Wcp = margin(Plant * C_pid)
+    
+    #### Code added to find gammaN and gammaR and to plot the noise and tracking specifications
+    #for the controller
+    #Also quick code to plot just the plant
+    mag, phase, omega = bode(Plant, dB=True,
+                             omega=np.logspace(-3, 5),
+                             Plot=True, label="$P(s)$")
+
+    gm, pm, Wcg, Wcp = margin(Plant * C_pid)
+    
+    magCP, phaseCP, omegaCP = bode(Plant*C_pid, plot=False,
+                            omega = [0.001, 100.0], dB=dB_flag) #TODO fill out these omega's for gammaN and gammaR
+    mag4Plt, phase4Plt, omega4Plt = bode(Plant*C_pid, plot=False,
+                            omega = [0.02, 2000.0], dB=dB_flag) #TODO fill out these omegas for the tracking and noise specifications
+    
+    #Tracking and noise specifications
+    ls.spec_tracking(gamma=0.1*1.0/mag4Plt[0], omega=0.02, flag=dB_flag)
+    ls.spec_noise(gamma=0.1*mag4Plt[1], omega=2000.0, flag=dB_flag)
+   
+    
+    print("MagCP: ", magCP)
     print("for original C_pid system:")
-    if dB_flag is True:
-        print(" pm: ", pm, " Wcp: ", Wcp, "gm: ", mag2db(gm), " Wcg: ", Wcg)
-    elif dB_flag is False:
-        print(" pm: ", pm, " Wcp: ", Wcp, "gm: ", gm, " Wcg: ", Wcg)
+    #It will spit out absolute magnitude, so I will not need to convert
+    print(" pm: ", pm, " Wcp: ", Wcp, "gm: ", gm, " Wcg: ", Wcg)
+    print("gammaR = ", 1.0/magCP[0])
+    print("gammaN = ", magCP[1])
+    #A few additional print statements
+    print("\n")
+    print("C(s): ", C)
+    print("\n")
+    print("F(s): ", F)
+    
+    #### end of inserted code, the stuff below is old
+    # print("for original C_pid system:")
+    # if dB_flag is True:
+    #     print(" pm: ", pm, " Wcp: ", Wcp, "gm: ", mag2db(gm), " Wcg: ", Wcg)
+    # elif dB_flag is False:
+    #     print(" pm: ", pm, " Wcp: ", Wcp, "gm: ", gm, " Wcg: ", Wcg)
 
     #########################################
     #   Define Design Specifications

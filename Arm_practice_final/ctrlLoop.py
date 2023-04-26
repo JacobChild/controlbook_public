@@ -1,5 +1,5 @@
-import rodMassParam as P
-import loopshapeRodMass as L
+import armParam as P
+import loopshapearmMass as L
 import numpy as np
 from control import tf, c2d, tf2ss
 #from discreteFilter import discreteFilter
@@ -28,7 +28,7 @@ class ctrlLoop:
         # update controller
         tau_tilde = self.control.update(error)
         # compute equilibrium torque tau_e
-        tau_e = P.m * P.g * P.ell
+        tau_e = P.m * P.g * P.ell / 2.0 #!This is just for the arm practice test only!
         # compute total torque
         tau = self.saturate(tau_e + tau_tilde)
         return tau

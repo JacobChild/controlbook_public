@@ -9,7 +9,7 @@ from ctrlLoop import ctrlLoop
 
 # instantiate system, controller, and reference classes
 rodMass = rodMassDynamics()
-controller = ctrlLoop(method="digital_filter")
+controller = ctrlLoop(method="digital_filter") #!make sure to do this on the final too!
 reference = signalGenerator(amplitude=20*np.pi/180.0, frequency=0.1)
 disturbance = signalGenerator(amplitude=0.5)
 
