@@ -21,7 +21,7 @@ dB_flag = True
 #######################################################################
 #   Control Design
 #######################################################################
-C = C_pid * ls.lead(w=13.375,M=11.5) * ls.lag(z=30.0, M =25.0) * ls.lpf(p=100.0)
+C = C_pid * ls.lead(w=13.375,M=12.5) * ls.lag(z=30.0, M =25.0) * ls.lpf(p=100.0)
 #lead is for phase margin, lag is for disturbances/tracking, lpf is for noise
 
 ###########################################################

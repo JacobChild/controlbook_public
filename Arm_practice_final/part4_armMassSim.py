@@ -9,7 +9,7 @@ from ctrlLoop import ctrlLoop
 
 # instantiate system, controller, and reference classes
 arm = armDynamics()
-controller = ctrlLoop(method="digital_filter")
+controller = ctrlLoop(method="digital_filter") #! digital_filter throws an error, and state_space blows up...
 reference = signalGenerator(amplitude=20*np.pi/180.0, frequency=0.1)
 disturbance = signalGenerator(amplitude=0.5)
 
